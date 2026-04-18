@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-
-<html class="light" lang="en"><head>
+﻿<!DOCTYPE html>
+<html class="light" lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>Branch WMS - Inventory Management</title>
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-  <!-- Material Symbols -->
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script id="tailwind-config">
@@ -15,7 +12,7 @@
       darkMode: "class",
       theme: {
         extend: {
-          "colors": {
+          colors: {
             "surface-container-highest": "#d7e4ec",
             "tertiary-fixed": "#ffdbcb",
             "secondary-fixed": "#cbe7f5",
@@ -36,13 +33,13 @@
             "surface-container-lowest": "#ffffff",
             "on-error": "#ffffff",
             "tertiary-fixed-dim": "#ffb691",
-            "background": "#f4faff",
+            background: "#f4faff",
             "on-tertiary-container": "#ffd1bc",
             "surface-container-high": "#ddeaf2",
             "on-surface": "#111d23",
             "primary-fixed": "#d7e2ff",
             "on-secondary-fixed-variant": "#304a55",
-            "primary": "#004692",
+            primary: "#004692",
             "inverse-surface": "#263238",
             "on-error-container": "#93000a",
             "on-secondary-fixed": "#021f29",
@@ -50,33 +47,33 @@
             "on-secondary-container": "#4e6874",
             "outline-variant": "#c2c6d4",
             "surface-container-low": "#e9f6fd",
-            "surface": "#f4faff",
+            surface: "#f4faff",
             "primary-fixed-dim": "#abc7ff",
             "on-tertiary": "#ffffff",
             "surface-variant": "#d7e4ec",
-            "secondary": "#48626e",
+            secondary: "#48626e",
             "primary-container": "#275fae",
             "on-primary": "#ffffff",
             "surface-bright": "#f4faff",
             "inverse-on-surface": "#e6f3fb",
             "on-primary-container": "#cbdbff",
             "surface-container": "#e3f0f8",
-            "error": "#ba1a1a",
+            error: "#ba1a1a",
             "on-tertiary-fixed-variant": "#783100"
           },
-          "borderRadius": {
-            "DEFAULT": "0.125rem",
-            "lg": "0.25rem",
-            "xl": "0.5rem",
-            "full": "0.75rem"
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.5rem",
+            full: "0.75rem"
           },
-          "fontFamily": {
-            "headline": ["Manrope"],
-            "body": ["Inter"],
-            "label": ["Inter"]
+          fontFamily: {
+            headline: ["Manrope"],
+            body: ["Inter"],
+            label: ["Inter"]
           }
-        },
-      },
+        }
+      }
     }
   </script>
   <style>
@@ -86,311 +83,289 @@
     }
     body { font-family: 'Inter', sans-serif; }
     .font-headline { font-family: 'Manrope', sans-serif; }
-
-    /* Custom scrollbar for data heavy views */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cfdce4; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #afcbd8; }
+    /* Sidebar smooth interaction helpers */
+    .sidebar-link {
+      transition: transform 160ms cubic-bezier(.2,.8,.2,1), background-color 160ms ease, color 160ms ease, opacity 160ms ease;
+      will-change: transform, background-color, opacity;
+      transform-origin: left center;
+    }
+    .sidebar-link:active,
+    .sidebar-link.pressed {
+      transform: translateX(6px) scale(0.995);
+      opacity: 0.98;
+    }
+    .sidebar-link:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(37,95,184,0.08);
+    }
   </style>
 </head>
 <body class="bg-surface text-on-background selection:bg-primary-container selection:text-on-primary-container">
-<!-- Sidebar Navigation -->
 <aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-[#cfdce4] dark:bg-[#1c2b33] flex flex-col border-r border-[#c2c6d4]/15">
   <div class="p-6">
-    <h2 class="font-headline font-extrabold text-[#004692] text-xl tracking-tight">Branch Alpha</h2>
-    <p class="text-on-surface-variant text-xs font-medium mt-1">Precision Logistics</p>
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary flex items-center justify-center rounded-lg shadow-inner">
+        <span class="material-symbols-outlined text-white">warehouse</span>
+      </div>
+      <div>
+        <h2 class="font-headline font-extrabold text-[#004692] text-xl tracking-tight" th:text="${currentStation.name}">Station Alpha</h2>
+        <p class="text-on-surface-variant text-xs font-medium mt-1" th:text="${currentStation.id}">STATION-ALPHA-7</p>
+      </div>
+    </div>
   </div>
   <nav class="flex-1 mt-4">
-    <!-- Dashboard -->
-    <a class="flex items-center text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" href="#">
-      <span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+    <a class="sidebar-link flex items-center text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" th:href="@{/dashboard}" data-href="/dashboard">
+      <span class="material-symbols-outlined mr-3">dashboard</span>
       <span class="font-medium text-sm antialiased">Dashboard</span>
     </a>
-    <!-- Inventory (Active State per JSON/Rule) -->
-    <a class="flex items-center bg-[#005FB8] text-white rounded-lg shadow-sm mx-2 my-1 px-4 py-3 scale-95 active:scale-100 transition-transform" href="#">
-      <span class="material-symbols-outlined mr-3" data-icon="inventory_2">inventory_2</span>
+    <a class="sidebar-link flex items-center bg-[#005FB8] text-white rounded-lg shadow-sm mx-2 my-1 px-4 py-3 scale-95 active:scale-100 transition-transform" th:href="@{/inventory}" data-href="/inventory">
+      <span class="material-symbols-outlined mr-3">inventory_2</span>
       <span class="font-medium text-sm antialiased">Inventory</span>
     </a>
-    <!-- Transactions -->
-    <a class="flex items-center text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" href="#">
-      <span class="material-symbols-outlined mr-3" data-icon="swap_horiz">swap_horiz</span>
-      <span class="font-medium text-sm antialiased">Transactions</span>
+    <a class="sidebar-link flex items-center text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" th:href="@{/receive}" data-href="/receive">
+      <span class="material-symbols-outlined mr-3">local_shipping</span>
+      <span class="font-medium text-sm antialiased">Receive</span>
     </a>
-    <!-- Master Data -->
-    <a class="flex items-center text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" href="#">
-      <span class="material-symbols-outlined mr-3" data-icon="database">database</span>
+    <a class="sidebar-link flex items-center text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" th:href="@{/possale}" data-href="/possale">
+      <span class="material-symbols-outlined mr-3">shopping_cart</span>
+      <span class="font-medium text-sm antialiased">POS Sale</span>
+    </a>
+    <a class="sidebar-link flex items-center text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" th:href="@{/masterdata}" data-href="/masterdata">
+      <span class="material-symbols-outlined mr-3">database</span>
       <span class="font-medium text-sm antialiased">Master Data</span>
     </a>
   </nav>
   <div class="mt-auto p-2 border-t border-[#c2c6d4]/15">
     <a class="flex items-center text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors" href="#">
-      <span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+      <span class="material-symbols-outlined mr-3">settings</span>
       <span class="font-medium text-sm antialiased">Settings</span>
     </a>
     <a class="flex items-center text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors" href="#">
-      <span class="material-symbols-outlined mr-3" data-icon="help_outline">help_outline</span>
+      <span class="material-symbols-outlined mr-3">help_outline</span>
       <span class="font-medium text-sm antialiased">Support</span>
     </a>
   </div>
 </aside>
-<!-- Main Content Area -->
-<main class="ml-64 min-h-screen flex flex-col">
-  <!-- TopNavBar Shell -->
-  <header class="docked full-width top-0 z-40 bg-[#f4faff] dark:bg-[#111d23] flex justify-between items-center w-full px-6 py-3 transition-all duration-200 ease-in-out">
+<main id="site-main" class="ml-64 min-h-screen flex flex-col">
+  <header class="docked full-width top-0 z-40 bg-[#f4faff] dark:bg-[#111d23] flex justify-between items-center w-full px-6 py-3 transition-all duration-200 ease-in-out border-b border-outline-variant/20">
     <div class="flex items-center gap-4">
       <h1 class="text-lg font-black text-[#111d23] dark:text-[#f4faff] font-headline">Branch WMS</h1>
       <div class="h-4 w-px bg-outline-variant/30"></div>
       <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-[#005FB8] text-sm" data-icon="location_on">location_on</span>
-        <span class="text-xs font-bold text-on-surface-variant tracking-wide">STATION-ALPHA-7</span>
+        <span class="material-symbols-outlined text-[#005FB8] text-sm">location_on</span>
+        <span class="text-xs font-bold text-on-surface-variant tracking-wide" th:text="${currentStation.name + ' · ' + currentStation.id}">STATION-ALPHA-7</span>
       </div>
     </div>
     <div class="flex items-center gap-6">
       <div class="flex items-center bg-surface-container rounded-full px-4 py-1.5 border-b-2 border-primary">
-        <span class="material-symbols-outlined text-on-surface-variant text-sm mr-2" data-icon="search">search</span>
+        <span class="material-symbols-outlined text-on-surface-variant text-sm mr-2">search</span>
         <input class="bg-transparent border-none focus:ring-0 text-sm font-medium w-48 text-on-surface placeholder:text-on-surface-variant/50" placeholder="Search Inventory SKU..." type="text"/>
       </div>
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-2 text-xs font-headline font-bold text-on-surface-variant">
-          <span class="material-symbols-outlined text-primary" data-icon="sync" style="font-variation-settings: 'wght' 600">sync</span>
-          Last Synced: 2 mins ago
+          <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'wght' 600">sync</span>
+          Live stock for current station
         </div>
         <div class="flex items-center gap-3">
-          <button class="text-on-surface-variant hover:text-primary transition-colors">
-            <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+          <button class="text-on-surface-variant hover:text-primary transition-colors" type="button">
+            <span class="material-symbols-outlined">notifications</span>
           </button>
-          <img alt="Station Manager Profile" class="w-8 h-8 rounded-full border border-outline-variant shadow-sm object-cover" data-alt="Close-up portrait of a professional warehouse manager wearing a high-visibility vest in a brightly lit industrial environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxQKR-K1TFK3beDuOwDZx15jiv-au0FqmTMMJL-ewl35C7qlst9UX7fUuFRUoFoIqyUhMDXtOzqYzmLUonFdk744E8WrM7TO1TkGKE7RvI6IXpuWuc0HHl4Wa8bRIo-htNzCnaRb4GB-Eg8ryUcqU2ddhDjaBb-gdgn22yqjCdU96M2-Ckr_18oBqLlobjK4AwJhT4oeOKi0rrnRII0_-yPs3HlfohxSbKpi578U4W0Qm1Q4XeoLeO12VvSKzeETmXT-BzWH3itV8"/>
+          <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">
+            <span th:text="${#strings.substring(currentStation.id, 0, 1)}">S</span>
+          </div>
         </div>
       </div>
     </div>
   </header>
-  <!-- Page Content -->
   <div class="p-8 space-y-8">
-    <!-- Header Section -->
-    <section class="flex justify-between items-end">
+    <section class="flex justify-between items-end gap-6">
       <div class="space-y-1">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 flex-wrap">
           <h2 class="text-3xl font-headline font-extrabold text-on-surface tracking-tight">Inventory Ledger</h2>
           <span class="bg-secondary-container text-on-secondary-container text-[0.6875rem] font-bold px-2 py-1 rounded-full tracking-wider uppercase flex items-center gap-1">
-<span class="material-symbols-outlined text-xs" data-icon="verified" style="font-variation-settings: 'FILL' 1">verified</span>
-                            Local Stock Only
-                        </span>
+            <span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1">verified</span>
+            Station Scoped
+          </span>
         </div>
-        <p class="text-on-surface-variant font-medium">Real-time stock levels for Branch Alpha primary hub.</p>
+        <p class="text-on-surface-variant font-medium" th:text="${'Managing stock for ' + currentStation.name + ' (' + currentStation.address + ')'}">
+          Managing stock for your current station.
+        </p>
       </div>
-      <div class="flex gap-3">
-        <button class="bg-surface-container-high text-on-surface-variant font-bold text-sm px-5 py-2.5 rounded-lg flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
-          <span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
-          Advanced Filters
-        </button>
-        <button class="bg-primary text-white font-bold text-sm px-6 py-2.5 rounded-lg shadow-sm flex items-center gap-2 hover:opacity-90 transition-opacity">
-          <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
-          Manual Entry
-        </button>
+      <div class="flex flex-wrap gap-3">
+        <a class="bg-surface-container-high text-on-surface-variant font-bold text-sm px-5 py-2.5 rounded-lg flex items-center gap-2 hover:bg-surface-container-highest transition-colors" th:href="@{/dashboard}">
+          <span class="material-symbols-outlined text-sm">space_dashboard</span>
+          Dashboard
+        </a>
+        <a class="bg-primary text-white font-bold text-sm px-6 py-2.5 rounded-lg shadow-sm flex items-center gap-2 hover:opacity-90 transition-opacity" th:href="@{/receive}">
+          <span class="material-symbols-outlined text-sm">local_shipping</span>
+          Receive Stock
+        </a>
       </div>
     </section>
-    <!-- KPI Cards - Bento Style -->
+    <section id="inventory-success-message" th:if="${successMessage}" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800" th:text="${successMessage}"></section>
+    <section id="inventory-error-message" th:if="${errorMessage}" class="rounded-xl border border-error-container bg-error-container px-4 py-3 text-sm font-semibold text-on-error-container" th:text="${errorMessage}"></section>
+    <section id="inventory-async-message" class="hidden rounded-xl px-4 py-3 text-sm font-semibold"></section>
     <section class="grid grid-cols-1 md:grid-cols-4 gap-6">
       <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col justify-between">
-        <span class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest">Total Stock Items</span>
+        <span class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest">Products in Inventory (SKU)</span>
         <div class="mt-4 flex items-baseline gap-2">
-          <span class="text-4xl font-headline font-black text-primary tracking-tight">12,482</span>
-          <span class="text-xs font-bold text-[#008000]">+3.2%</span>
+          <span class="text-4xl font-headline font-black text-primary tracking-tight" th:text="${trackedProducts}">0</span>
+        </div>
+      </div>
+      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col justify-between">
+        <span class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest">Total Units</span>
+        <div class="mt-4 flex items-baseline gap-2">
+          <span id="total-units-value" class="text-4xl font-headline font-black text-secondary tracking-tight" th:text="${totalUnits}">0</span>
         </div>
       </div>
       <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col justify-between">
         <span class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest">Low Stock Alerts</span>
         <div class="mt-4 flex items-baseline gap-2">
-          <span class="text-4xl font-headline font-black text-error tracking-tight">14</span>
-          <span class="text-xs font-bold text-on-surface-variant">Items needing reorder</span>
+          <span id="low-stock-count-value" class="text-4xl font-headline font-black text-error tracking-tight" th:text="${lowStockCount}">0</span>
+          <span id="low-stock-threshold-label" class="text-xs font-bold text-on-surface-variant" th:text="${'≤ ' + lowStockThreshold + ' units'}">≤ 20 units</span>
         </div>
       </div>
-      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col justify-between">
-        <span class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest">Awaiting Receiving</span>
+      <div class="bg-primary-container p-6 rounded-xl shadow-sm border border-primary/20 flex flex-col justify-between text-on-primary-container">
+        <span class="text-[0.6875rem] font-bold uppercase tracking-widest opacity-80">Station Scope</span>
         <div class="mt-4 flex items-baseline gap-2">
-          <span class="text-4xl font-headline font-black text-secondary tracking-tight">412</span>
-          <span class="text-xs font-bold text-on-surface-variant">Inbound units</span>
+          <span class="text-2xl font-headline font-black tracking-tight" th:text="${currentStation.id}">STATION-ALPHA-7</span>
         </div>
-      </div>
-      <div class="bg-primary-container p-6 rounded-xl shadow-sm border border-primary/20 flex flex-col justify-between text-on-primary-container relative overflow-hidden">
-        <div class="z-10 flex flex-col h-full justify-between">
-          <span class="text-[0.6875rem] font-bold uppercase tracking-widest opacity-80">Sync Integrity</span>
-          <div class="mt-4 flex items-baseline gap-2">
-            <span class="text-4xl font-headline font-black tracking-tight">99.8%</span>
-            <span class="material-symbols-outlined text-xl" data-icon="check_circle">check_circle</span>
-          </div>
-        </div>
-        <!-- Subtle background decoration -->
-        <div class="absolute -right-4 -bottom-4 opacity-10">
-          <span class="material-symbols-outlined text-8xl" data-icon="cloud_sync" style="font-variation-settings: 'FILL' 1">cloud_sync</span>
-        </div>
+        <span class="text-xs font-medium opacity-90" th:text="${currentStation.address}">Station address</span>
       </div>
     </section>
-    <!-- Inventory Data Table -->
-    <section class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/15">
-      <table class="w-full text-left border-collapse">
-        <thead class="bg-surface-container-low">
-        <tr>
-          <th class="px-6 py-4 text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-wider">SKU</th>
-          <th class="px-6 py-4 text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-wider">Product Name</th>
-          <th class="px-6 py-4 text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-wider">Category</th>
-          <th class="px-6 py-4 text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-wider">Stock Level</th>
-          <th class="px-6 py-4 text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-wider">Last Updated</th>
-          <th class="px-6 py-4 text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
-        </tr>
-        </thead>
-        <tbody class="divide-y divide-outline-variant/10">
-        <!-- Row 1 -->
-        <tr class="hover:bg-surface-container/30 transition-colors group">
-          <td class="px-6 py-4 font-headline text-sm font-bold text-primary">EL-MOD-4421</td>
-          <td class="px-6 py-4">
-            <div class="flex flex-col">
-              <span class="text-sm font-semibold text-on-surface">Precision Control Module V4</span>
-              <span class="text-[0.65rem] text-on-surface-variant uppercase font-medium">OEM: Schneider Tech</span>
-            </div>
-          </td>
-          <td class="px-6 py-4">
-            <span class="text-xs bg-surface-container px-2.5 py-1 rounded-full text-on-surface-variant font-medium">Electronics</span>
-          </td>
-          <td class="px-6 py-4">
-            <div class="flex items-center gap-3">
-              <div class="w-16 bg-outline-variant/20 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-primary h-full w-[85%]"></div>
-              </div>
-              <span class="text-sm font-bold text-on-surface">1,402 <span class="text-on-surface-variant font-medium text-xs">units</span></span>
-            </div>
-          </td>
-          <td class="px-6 py-4 text-xs text-on-surface-variant font-medium tracking-tight">Today, 09:42 AM</td>
-          <td class="px-6 py-4 text-right">
-            <div class="flex justify-end gap-2">
-              <button class="text-primary hover:bg-primary-container/20 px-3 py-1.5 rounded text-xs font-bold transition-all">Update Stock</button>
-              <button class="text-on-surface-variant hover:text-on-surface px-2 py-1.5 rounded transition-all">
-                <span class="material-symbols-outlined text-lg" data-icon="history">history</span>
-              </button>
-            </div>
-          </td>
-        </tr>
-        <!-- Row 2 (Low Stock Warning) -->
-        <tr class="hover:bg-surface-container/30 transition-colors group">
-          <td class="px-6 py-4 font-headline text-sm font-bold text-primary">HYD-PRS-990</td>
-          <td class="px-6 py-4">
-            <div class="flex flex-col">
-              <span class="text-sm font-semibold text-on-surface">High-Pressure Valve Assembly</span>
-              <span class="text-[0.65rem] text-error font-bold uppercase">REORDER PENDING</span>
-            </div>
-          </td>
-          <td class="px-6 py-4">
-            <span class="text-xs bg-surface-container px-2.5 py-1 rounded-full text-on-surface-variant font-medium">Hydraulics</span>
-          </td>
-          <td class="px-6 py-4">
-            <div class="flex items-center gap-3">
-              <div class="w-16 bg-outline-variant/20 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-error h-full w-[12%]"></div>
-              </div>
-              <span class="text-sm font-bold text-error">12 <span class="text-on-surface-variant font-medium text-xs">units</span></span>
-            </div>
-          </td>
-          <td class="px-6 py-4 text-xs text-on-surface-variant font-medium tracking-tight">Yesterday, 04:15 PM</td>
-          <td class="px-6 py-4 text-right">
-            <div class="flex justify-end gap-2">
-              <button class="bg-error/10 text-error hover:bg-error/20 px-3 py-1.5 rounded text-xs font-bold transition-all">Restock Now</button>
-              <button class="text-on-surface-variant hover:text-on-surface px-2 py-1.5 rounded transition-all">
-                <span class="material-symbols-outlined text-lg" data-icon="history">history</span>
-              </button>
-            </div>
-          </td>
-        </tr>
-        <!-- Row 3 -->
-        <tr class="hover:bg-surface-container/30 transition-colors group">
-          <td class="px-6 py-4 font-headline text-sm font-bold text-primary">CAB-RACK-02</td>
-          <td class="px-6 py-4">
-            <div class="flex flex-col">
-              <span class="text-sm font-semibold text-on-surface">Industrial 24U Server Rack</span>
-              <span class="text-[0.65rem] text-on-surface-variant uppercase font-medium">Bulk Storage</span>
-            </div>
-          </td>
-          <td class="px-6 py-4">
-            <span class="text-xs bg-surface-container px-2.5 py-1 rounded-full text-on-surface-variant font-medium">IT Hardware</span>
-          </td>
-          <td class="px-6 py-4">
-            <div class="flex items-center gap-3">
-              <div class="w-16 bg-outline-variant/20 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-primary h-full w-[45%]"></div>
-              </div>
-              <span class="text-sm font-bold text-on-surface">42 <span class="text-on-surface-variant font-medium text-xs">units</span></span>
-            </div>
-          </td>
-          <td class="px-6 py-4 text-xs text-on-surface-variant font-medium tracking-tight">22 Oct, 11:20 AM</td>
-          <td class="px-6 py-4 text-right">
-            <div class="flex justify-end gap-2">
-              <button class="text-primary hover:bg-primary-container/20 px-3 py-1.5 rounded text-xs font-bold transition-all">Update Stock</button>
-              <button class="text-on-surface-variant hover:text-on-surface px-2 py-1.5 rounded transition-all">
-                <span class="material-symbols-outlined text-lg" data-icon="history">history</span>
-              </button>
-            </div>
-          </td>
-        </tr>
-        <!-- Row 4 -->
-        <tr class="hover:bg-surface-container/30 transition-colors group">
-          <td class="px-6 py-4 font-headline text-sm font-bold text-primary">PNU-CYL-88</td>
-          <td class="px-6 py-4">
-            <div class="flex flex-col">
-              <span class="text-sm font-semibold text-on-surface">Pneumatic Actuator Cylinder</span>
-              <span class="text-[0.65rem] text-on-surface-variant uppercase font-medium">Critical Component</span>
-            </div>
-          </td>
-          <td class="px-6 py-4">
-            <span class="text-xs bg-surface-container px-2.5 py-1 rounded-full text-on-surface-variant font-medium">Pneumatics</span>
-          </td>
-          <td class="px-6 py-4">
-            <div class="flex items-center gap-3">
-              <div class="w-16 bg-outline-variant/20 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-primary h-full w-[62%]"></div>
-              </div>
-              <span class="text-sm font-bold text-on-surface">88 <span class="text-on-surface-variant font-medium text-xs">units</span></span>
-            </div>
-          </td>
-          <td class="px-6 py-4 text-xs text-on-surface-variant font-medium tracking-tight">21 Oct, 09:02 AM</td>
-          <td class="px-6 py-4 text-right">
-            <div class="flex justify-end gap-2">
-              <button class="text-primary hover:bg-primary-container/20 px-3 py-1.5 rounded text-xs font-bold transition-all">Update Stock</button>
-              <button class="text-on-surface-variant hover:text-on-surface px-2 py-1.5 rounded transition-all">
-                <span class="material-symbols-outlined text-lg" data-icon="history">history</span>
-              </button>
-            </div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <div class="p-4 bg-surface-container-low flex justify-between items-center">
-        <span class="text-xs font-medium text-on-surface-variant">Showing 1-15 of 4,208 SKUs</span>
-        <div class="flex gap-1">
-          <button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant transition-colors">
-            <span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+    <section class="grid grid-cols-1 lg:grid-cols-[1.1fr_1.5fr] gap-6">
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/15 p-6 space-y-5">
+        <div>
+          <h3 class="text-lg font-headline font-bold text-on-surface">Receive stock into this station</h3>
+          <p class="text-sm text-on-surface-variant mt-1">This form creates or increases inventory only for the station assigned to the logged-in user.</p>
+        </div>
+        <form class="grid grid-cols-1 gap-4" method="post" th:action="@{/inventory/receive}">
+          <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+          <div class="space-y-1.5">
+            <label class="font-label text-[11px] font-bold tracking-wider text-on-surface-variant uppercase ml-0.5" for="product-id">Product ID</label>
+            <input class="w-full rounded-lg border border-outline-variant/30 bg-surface px-4 py-3 text-sm focus:border-primary focus:ring-primary" id="product-id" name="productId" placeholder="Enter product ID" required type="text"/>
+          </div>
+          <div class="space-y-1.5">
+            <label class="font-label text-[11px] font-bold tracking-wider text-on-surface-variant uppercase ml-0.5" for="quantity">Quantity</label>
+            <input class="w-full rounded-lg border border-outline-variant/30 bg-surface px-4 py-3 text-sm focus:border-primary focus:ring-primary" id="quantity" min="1" name="quantity" placeholder="Enter quantity" required type="number" value="1"/>
+          </div>
+          <button class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-bold text-white shadow-sm hover:opacity-90 transition-opacity" type="submit">
+            <span class="material-symbols-outlined text-sm">add_box</span>
+            Receive Stock
           </button>
-          <button class="w-8 h-8 rounded bg-primary text-white text-xs font-bold">1</button>
-          <button class="w-8 h-8 rounded hover:bg-surface-container text-on-surface-variant text-xs font-bold transition-colors">2</button>
-          <button class="w-8 h-8 rounded hover:bg-surface-container text-on-surface-variant text-xs font-bold transition-colors">3</button>
-          <button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant transition-colors">
-            <span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
-          </button>
+        </form>
+      </div>
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/15 overflow-hidden">
+        <div class="px-6 py-5 border-b border-outline-variant/10 flex items-center justify-between gap-4">
+          <div>
+            <h3 class="text-lg font-headline font-bold text-on-surface">Inventory rows</h3>
+            <p class="text-sm text-on-surface-variant">Current quantity for each product SKU at this station.</p>
+          </div>
+          <span class="text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1.5 rounded-full" th:text="${inventoryItems.size() + ' rows'}">0 rows</span>
+        </div>
+        <div>
+          <table class="w-full table-fixed text-left border-collapse">
+            <thead class="bg-surface-container-low">
+            <tr>
+              <th class="w-[15%] px-4 py-4 text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-wider">SKU</th>
+              <th class="w-[32%] px-4 py-4 text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-wider">Product</th>
+              <th class="w-[21%] px-4 py-4 text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-wider">Category</th>
+              <th class="w-[20%] px-4 py-4 text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-wider">Stock</th>
+              <th class="w-[12%] px-4 py-4 text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-wider text-right">Update</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/10">
+            <tr th:if="${#lists.isEmpty(inventoryItems)}">
+              <td class="px-6 py-10 text-center text-sm text-on-surface-variant" colspan="5">
+                No inventory has been recorded for this station yet.
+              </td>
+            </tr>
+            <tr class="hover:bg-surface-container/30 transition-colors group" th:each="item : ${inventoryItems}" th:attr="data-product-id=${item.product.id},data-current-quantity=${item.quantity}">
+              <td class="px-4 py-4 font-headline text-sm font-bold text-primary truncate" th:text="${item.product.id}">SKU</td>
+              <td class="px-4 py-4">
+                <div class="flex flex-col">
+                  <span class="text-sm font-semibold text-on-surface truncate" th:text="${item.product.name}">Product name</span>
+                  <span class="text-[0.65rem] text-on-surface-variant uppercase font-medium" th:text="${currentStation.name}">Station</span>
+                </div>
+              </td>
+              <td class="px-4 py-4">
+                <span class="inline-block max-w-full truncate text-xs bg-surface-container px-2.5 py-1 rounded-full text-on-surface-variant font-medium" th:text="${item.product.category.name}">Category</span>
+              </td>
+              <td class="px-4 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-16 bg-outline-variant/20 h-1.5 rounded-full overflow-hidden">
+                    <div class="h-full stock-bar" th:classappend="${item.quantity <= lowStockThreshold} ? ' bg-error' : ' bg-primary'" th:style="${'width:' + (item.quantity >= 100 ? 100 : item.quantity) + '%'}"></div>
+                  </div>
+                  <span class="text-sm font-bold stock-value-wrapper" th:classappend="${item.quantity <= lowStockThreshold} ? ' text-error' : ' text-on-surface'">
+                    <span class="stock-value" th:text="${item.quantity}">0</span>
+                    <span class="text-on-surface-variant font-medium text-xs">units</span>
+                  </span>
+                </div>
+              </td>
+              <td class="px-4 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button class="inline-flex h-8 w-24 items-center justify-center rounded bg-primary/10 text-xs font-bold text-primary transition-all hover:bg-primary/20 open-adjust-modal" th:attr="data-product-id=${item.product.id},data-product-name=${item.product.name}" type="button">Update</button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
   </div>
-  <!-- Sync Indicator Overlay -->
+
+  <div id="inventory-adjust-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/40 px-4">
+    <div class="w-full max-w-md rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-6 shadow-xl">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h3 class="text-lg font-headline font-bold text-on-surface">Update Inventory</h3>
+          <p id="modal-product-name" class="mt-1 text-sm font-medium text-on-surface-variant">Product</p>
+        </div>
+        <button id="close-adjust-modal" class="rounded-md p-1 text-on-surface-variant hover:bg-surface-container" type="button" aria-label="Close modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <form id="adjust-modal-form" class="mt-5 space-y-4" th:attr="data-adjust-url=@{/inventory/adjust-ajax}">
+        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+        <input id="modal-product-id" name="productId" type="hidden"/>
+        <input id="modal-operation" name="operation" type="hidden" value="increase"/>
+
+        <div class="rounded-lg bg-surface-container px-4 py-3 text-sm text-on-surface">
+          Current stock: <span id="modal-current-quantity" class="font-bold">0</span> units
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="font-label text-[11px] font-bold tracking-wider text-on-surface-variant uppercase" for="modal-quantity">Quantity</label>
+          <input id="modal-quantity" name="quantity" class="w-full rounded-lg border border-outline-variant/30 bg-surface px-4 py-3 text-sm focus:border-primary focus:ring-primary" min="1" required type="number" value="1"/>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button class="inline-flex h-10 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary hover:bg-primary/20" data-operation="increase" type="submit">+ Add</button>
+          <button class="inline-flex h-10 items-center justify-center rounded-lg bg-error/10 text-sm font-bold text-error hover:bg-error/20" data-operation="decrease" type="submit">- Deduct</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="fixed bottom-6 right-6 z-50">
-    <div class="bg-surface-container-highest/70 backdrop-blur-md border border-outline-variant/15 p-4 rounded-xl shadow-lg flex items-center gap-4">
+    <div class="bg-surface-container-highest/80 backdrop-blur-md border border-outline-variant/15 p-4 rounded-xl shadow-lg flex items-center gap-4">
       <div class="relative">
-        <span class="material-symbols-outlined text-primary" data-icon="cloud_done">cloud_done</span>
+        <span class="material-symbols-outlined text-primary">cloud_done</span>
         <div class="absolute -top-1 -right-1 w-2 h-2 bg-[#008000] rounded-full animate-pulse"></div>
       </div>
       <div class="flex flex-col">
-        <span class="text-[0.65rem] font-bold text-on-surface-variant uppercase tracking-wider">Sync Integrity</span>
-        <span class="text-xs font-bold text-on-surface">Data connection stable</span>
+        <span class="text-[0.65rem] font-bold text-on-surface-variant uppercase tracking-wider">Access control</span>
+        <span class="text-xs font-bold text-on-surface">Users can only modify inventory in their assigned station.</span>
       </div>
     </div>
   </div>
 </main>
-</body></html>
+<script defer th:src="@{/js/inventory.js}"></script>
+</body>
+</html>

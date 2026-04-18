@@ -3,6 +3,7 @@
 <html class="light" lang="en"><head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Branch WMS - Master Data</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -97,8 +98,8 @@
         <span class="material-symbols-outlined" data-icon="warehouse" style="font-variation-settings: 'FILL' 1;">warehouse</span>
       </div>
       <div>
-        <h2 class="font-['Manrope'] font-extrabold text-[#004692] text-lg leading-tight">Branch Alpha</h2>
-        <p class="text-xs text-on-secondary-container/70">Precision Logistics</p>
+        <h2 class="font-['Manrope'] font-extrabold text-[#004692] text-lg leading-tight" th:text="${currentStation.name}">Branch Alpha</h2>
+        <p class="text-xs text-on-secondary-container/70" th:text="${currentStation.address}">Precision Logistics</p>
       </div>
     </div>
     <nav class="space-y-1">
@@ -138,7 +139,7 @@
   </div>
 </aside>
 <!-- Main Content Canvas -->
-<main class="flex-1 ml-64 min-h-screen flex flex-col bg-surface">
+<main id="site-main" class="flex-1 ml-64 min-h-screen flex flex-col bg-surface">
   <!-- TopNavBar (Authority: JSON) -->
   <header class="docked full-width top-0 z-40 bg-[#f4faff] dark:bg-[#111d23] flex justify-between items-center w-full px-6 py-3 font-['Manrope'] font-bold tracking-tight text-sm">
     <div class="flex items-center gap-4">
@@ -161,6 +162,14 @@
       <div class="flex items-center gap-2">
         <img alt="Station Manager Profile" class="w-8 h-8 rounded-full border-2 border-primary/20" data-alt="professional portrait of a middle-aged warehouse operations manager in a high-vis vest in a bright industrial setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZJCu4iq7xRQ_5156UCq7LoX5cAKsfe0HvedadAvZa4bemS_Q3y_vS0ENDhqBNmdJHMFdCsRyJ61_E3nRM5cKSN9ByWX90nQRHEX68gHGTCfE5f3cFTtW8Nk7BTUv4h_vtSFP9NKztwzVun8I7u2dueYBaK0yQxTKhamaX36Mpz7zPenEnsQUchVvmRJ1IKTqfrBVp5_6wTE3Ap-k9Q4ZU--G3HuhlYKyb7VgOPnQlXTkAKzTxVCiF_ECcUrytXJwRsdH5dHIvaPQ"/>
       </div>
+      <!-- Logout in header -->
+      <form method="post" th:action="@{/logout}" class="ml-4">
+        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+        <button type="submit" class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-md">
+          <span class="material-symbols-outlined">logout</span>
+        </button>
+      </form>
+      </div>
     </div>
   </header>
   <!-- Read-Only Banner -->
@@ -170,7 +179,7 @@
         <span class="material-symbols-outlined text-tertiary-container" data-icon="lock" style="font-variation-settings: 'FILL' 1;">lock</span>
         <div>
           <p class="font-bold text-on-surface">Centralized Governance Active</p>
-          <p class="text-sm text-on-surface-variant">Master Data managed by Central Hub. Access is read-only for Branch Alpha.</p>
+          <p class="text-sm text-on-surface-variant" th:text="${'Master Data managed by Central Hub. Access is read-only for ' + currentStation.name + '.'}">Master Data managed by Central Hub. Access is read-only for Branch Alpha.</p>
         </div>
       </div>
       <div class="flex gap-2">
@@ -237,7 +246,8 @@
         </div>
         <div class="p-6 flex justify-between items-center bg-surface-container-low/50">
           <div class="relative w-72">
-            <input class="w-full pl-10 pr-4 py-2 bg-surface-container border-b-2 border-primary focus:outline-none text-sm rounded-t-lg transition-all" placeholder="Search product ID, name..." type="text"/>
+            <label class="sr-only" for="masterdata-search">Search product ID or name</label>
+            <input class="w-full pl-10 pr-4 py-2 bg-surface-container border-b-2 border-primary focus:outline-none text-sm rounded-t-lg transition-all" id="masterdata-search" placeholder="Search product ID, name..." type="text"/>
             <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-sm" data-icon="search">search</span>
           </div>
           <div class="flex gap-4">

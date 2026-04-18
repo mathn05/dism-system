@@ -80,9 +80,6 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-        .tonal-stepping-recessed {
-            background: linear-gradient(to right, #cfdce4, #e3f0f8);
-        }
         .ghost-border {
             outline: 1px solid rgba(194, 198, 212, 0.15);
         }
@@ -93,8 +90,8 @@
 <aside class="h-screen w-72 left-0 top-0 sticky bg-[#cfdce4] flex flex-col p-6 space-y-8 z-50">
     <!-- Header / Brand -->
     <div class="flex flex-col space-y-1 px-4">
-        <span class="font-headline font-extrabold text-lg text-[#005FB8]">Station Alpha</span>
-        <span class="font-body text-xs font-medium tracking-wide text-on-secondary-container opacity-70">WH-4022-NY</span>
+        <span class="font-headline font-extrabold text-lg text-[#005FB8]" th:text="${currentStation.name}">Station Alpha</span>
+        <span class="font-body text-xs font-medium tracking-wide text-on-secondary-container opacity-70" th:text="${currentStation.id}">WH-4022-NY</span>
     </div>
     <!-- Navigation Tabs -->
     <nav class="flex-1 space-y-2">
@@ -136,7 +133,7 @@
     </div>
 </aside>
 <!-- Main Workspace -->
-<main class="flex-1 flex flex-col overflow-hidden">
+<main id="site-main" class="flex-1 flex flex-col overflow-hidden">
     <!-- TopNavBar -->
     <header class="flex justify-between items-center w-full px-8 h-16 z-40 bg-[#f4faff] relative">
         <div class="flex items-center gap-6">
@@ -171,39 +168,6 @@
                     <span class="material-symbols-outlined text-primary opacity-50">inventory</span>
                 </div>
                 <div>
-                    <div class="text-2xl font-headline font-extrabold text-on-background">12,482</div>
-                    <div class="text-[0.6875rem] text-on-secondary-container mt-1">Units available across all bins</div>
-                </div>
-            </div>
-            <!-- Metric Card 2 -->
-            <div class="bg-surface-container-lowest p-6 rounded-xl ghost-border flex flex-col justify-between h-36">
-                <div class="flex justify-between items-start">
-                    <span class="text-[0.6875rem] font-label font-bold tracking-widest text-on-surface-variant uppercase">Low Stock Alerts</span>
-                    <span class="material-symbols-outlined text-error opacity-50">warning</span>
-                </div>
-                <div>
-                    <div class="text-2xl font-headline font-extrabold text-error">14 SKUs</div>
-                    <div class="text-[0.6875rem] text-error opacity-80 mt-1">Requiring immediate replenishment</div>
-                </div>
-            </div>
-            <!-- Metric Card 3 -->
-            <div class="bg-surface-container-lowest p-6 rounded-xl ghost-border flex flex-col justify-between h-36">
-                <div class="flex justify-between items-start">
-                    <span class="text-[0.6875rem] font-label font-bold tracking-widest text-on-surface-variant uppercase">Incoming Transfers</span>
-                    <span class="material-symbols-outlined text-primary opacity-50">local_shipping</span>
-                </div>
-                <div>
-                    <div class="text-2xl font-headline font-extrabold text-on-background">4 Shipments</div>
-                    <div class="text-[0.6875rem] text-on-secondary-container mt-1">Expected today before 18:00</div>
-                </div>
-            </div>
-            <!-- Metric Card 4 -->
-            <div class="bg-surface-container-lowest p-6 rounded-xl ghost-border flex flex-col justify-between h-36">
-                <div class="flex justify-between items-start">
-                    <span class="text-[0.6875rem] font-label font-bold tracking-widest text-on-surface-variant uppercase">Daily Sales Total</span>
-                    <span class="material-symbols-outlined text-primary opacity-50">payments</span>
-                </div>
-                <div>
                     <div class="text-2xl font-headline font-extrabold text-on-background">$4,250.00</div>
                     <div class="text-[0.6875rem] text-on-secondary-container mt-1">Net fulfillment value today</div>
                 </div>
@@ -225,7 +189,7 @@
                     </div>
                 </div>
                 <div class="flex-1 relative overflow-hidden rounded-lg">
-                    <img class="w-full h-full object-cover opacity-90 rounded-lg" data-alt="minimal abstract data visualization chart showing blue lines and bars representing warehouse inventory trends on a light background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfRZAgtDURfO-DTd8xBWkAHxOE9lNUSDv0OSlws66hcGXZG7K1DwZe4SxfgahV5GcxSw6a0VYwvhQzC4arohVuAgvMuIBq3iL2g6h-I2W8lOmQ9q45Xrk7KI65hBKtu3O-RUj3_-Kk2Qxhp_Gx2fSFWNruW-qbXVLrqslylWHYVyks18mzFoQSOS_Ld1H4sVWBRWB74Y1uDqLbGzq3BBNKtfjeA74qRMDhqsXj_3qC86bEvQ9pOR0uN_djsV0Tqjb4e2pzn0q-bVk"/>
+                    <img alt="Warehouse trend visualization" class="w-full h-full object-cover opacity-90 rounded-lg" data-alt="minimal abstract data visualization chart showing blue lines and bars representing warehouse inventory trends on a light background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfRZAgtDURfO-DTd8xBWkAHxOE9lNUSDv0OSlws66hcGXZG7K1DwZe4SxfgahV5GcxSw6a0VYwvhQzC4arohVuAgvMuIBq3iL2g6h-I2W8lOmQ9q45Xrk7KI65hBKtu3O-RUj3_-Kk2Qxhp_Gx2fSFWNruW-qbXVLrqslylWHYVyks18mzFoQSOS_Ld1H4sVWBRWB74Y1uDqLbGzq3BBNKtfjeA74qRMDhqsXj_3qC86bEvQ9pOR0uN_djsV0Tqjb4e2pzn0q-bVk"/>
                     <!-- Glassmorphic Overlay for "Chart Data" simulation -->
                     <div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/80 to-transparent pointer-events-none"></div>
                 </div>
@@ -279,7 +243,7 @@
                         <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></span>
                         <h2 class="font-headline font-bold text-lg text-on-background">Sync Integrity: Optimal</h2>
                     </div>
-                    <p class="text-sm text-secondary leading-relaxed">
+                    <p class="text-sm text-secondary leading-relaxed" th:text="${currentStation.name + ' is currently communicating with Central Hub. Local inventory adjustments are scoped to ' + currentStation.address + '. Security protocol V4.2 active.'}">
                         Station Alpha is currently communicating with Central Hub via High-Speed Ledger Tunnel. All local inventory adjustments are reflecting globally with a mean latency of <span class="font-bold">142ms</span>. Security protocol V4.2 active.
                     </p>
                 </div>
