@@ -60,18 +60,6 @@ public class PageController {
         return "masterdata";
     }
 
-    @GetMapping("/possale")
-    public String posSalePage(Authentication authentication, Model model) {
-        addCurrentStation(authentication, model);
-        return "possale";
-    }
-
-    @GetMapping("/receive")
-    public String receivePage(Authentication authentication, Model model) {
-        addCurrentStation(authentication, model);
-        return "receive";
-    }
-
     private void addCurrentStation(Authentication authentication, Model model) {
         if (authentication == null
             || !authentication.isAuthenticated()
