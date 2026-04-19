@@ -8,56 +8,166 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
         body { font-family: 'Inter', sans-serif; }
         .font-headline { font-family: 'Manrope', sans-serif; }
     </style>
 </head>
 <body class="bg-[#f4faff] text-[#111d23]">
 <div th:replace="sidebar :: sidebar"></div>
-<main id="site-main" class="ml-64 min-h-screen p-8">
-    <header class="mb-8">
-        <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#005FB8]">Master Data</p>
-        <h1 class="mt-2 text-3xl font-headline font-extrabold">Catalog overview</h1>
-        <p class="mt-2 text-sm text-slate-600">Giữ lại trang này cho chức năng sau, hiện chỉ hiển thị dữ liệu nền tảng theo dạng gọn.</p>
+<main id="site-main" class="ml-64 min-h-screen flex flex-col">
+    <header class="bg-[#f4faff] flex justify-between items-center w-full px-6 py-3 border-b border-slate-200">
+        <div class="flex items-center gap-4">
+            <h1 class="text-lg font-black font-headline">Master Data</h1>
+            <div class="h-4 w-px bg-slate-300/60"></div>
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#005FB8] text-sm">database</span>
+                <span class="text-xs font-bold text-slate-600 tracking-wide" th:text="${currentStation.name + ' - ' + currentStation.id}">Station</span>
+            </div>
+        </div>
+        <div class="text-xs font-headline font-bold text-slate-500">View only shared master data</div>
     </header>
 
-    <section class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div class="border-b border-slate-200 px-6 py-4">
-            <h2 class="text-lg font-headline font-bold">Danh mục nền</h2>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-left text-sm">
-                <thead class="bg-slate-50 text-slate-600">
-                <tr>
-                    <th class="px-6 py-4">Mã</th>
-                    <th class="px-6 py-4">Tên</th>
-                    <th class="px-6 py-4">Nhóm</th>
-                    <th class="px-6 py-4">Trạng thái</th>
-                </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-200">
-                <tr>
-                    <td class="px-6 py-4 font-semibold text-[#005FB8]">ELC-2024-X9</td>
-                    <td class="px-6 py-4">Pro-Logic Motherboard X9</td>
-                    <td class="px-6 py-4">Electronics</td>
-                    <td class="px-6 py-4"><span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">Active</span></td>
-                </tr>
-                <tr>
-                    <td class="px-6 py-4 font-semibold text-[#005FB8]">MEC-HD-700</td>
-                    <td class="px-6 py-4">Hydraulic Seal 700 Series</td>
-                    <td class="px-6 py-4">Spare Parts</td>
-                    <td class="px-6 py-4"><span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">Active</span></td>
-                </tr>
-                <tr>
-                    <td class="px-6 py-4 font-semibold text-[#005FB8]">PKG-CRL-90</td>
-                    <td class="px-6 py-4">Reinforced Poly-Wrap</td>
-                    <td class="px-6 py-4">Packaging</td>
-                    <td class="px-6 py-4"><span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">Review</span></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
+    <div class="p-8 space-y-8">
+        <section class="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-6 border-b border-slate-200">
+                    <h2 class="text-3xl font-headline font-extrabold tracking-tight">Shared catalog</h2>
+                    <p class="mt-2 text-sm text-slate-500">May tram chi duoc xem du lieu dung chung gom product, category va supplier. Khong co thao tac them, sua hoac xoa tai day.</p>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Products</div>
+                        <div class="mt-3 text-3xl font-headline font-black text-[#004692]" th:text="${productCount}">0</div>
+                        <div class="mt-1 text-sm text-slate-500">Danh muc san pham dung chung</div>
+                    </div>
+                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Categories</div>
+                        <div class="mt-3 text-3xl font-headline font-black text-slate-900" th:text="${categoryCount}">0</div>
+                        <div class="mt-1 text-sm text-slate-500">Nhom hang ap dung toan he thong</div>
+                    </div>
+                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Suppliers</div>
+                        <div class="mt-3 text-3xl font-headline font-black text-emerald-600" th:text="${supplierCount}">0</div>
+                        <div class="mt-1 text-sm text-slate-500">Danh sach nha cung cap dung chung</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-[#275fae] rounded-xl border border-[#275fae] p-6 text-white">
+                <div class="text-[0.6875rem] font-bold uppercase tracking-widest opacity-80">Access scope</div>
+                <div class="mt-3 text-2xl font-headline font-black tracking-tight">Read-only at workstation</div>
+                <div class="mt-3 text-sm opacity-90">Du lieu master la du lieu dung chung cho toan he thong. May tram chi xem de phuc vu nghiep vu ban hang, ton kho va tiep nhan don.</div>
+                <div class="mt-6 rounded-xl bg-white/15 px-4 py-4">
+                    <div class="text-[11px] font-bold uppercase tracking-wider opacity-80">Current station</div>
+                    <div class="mt-2 text-lg font-headline font-black" th:text="${currentStation.id}">ST01</div>
+                    <div class="mt-1 text-sm opacity-90" th:text="${currentStation.name}">Station</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-headline font-bold text-slate-900">Products</h3>
+                    <p class="text-sm text-slate-500">Danh sach san pham dung chung cho cac tram. Chi xem, khong chinh sua.</p>
+                </div>
+                <span class="text-xs font-bold uppercase tracking-widest text-[#004692] bg-[#004692]/10 px-3 py-1.5 rounded-full" th:text="${productCount + ' records'}">0 records</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[900px] text-left border-collapse">
+                    <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Product ID</th>
+                        <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Name</th>
+                        <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Category</th>
+                        <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider text-right">Price</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                    <tr th:if="${#lists.isEmpty(products)}">
+                        <td class="px-6 py-10 text-center text-sm text-slate-500" colspan="4">No product master data found.</td>
+                    </tr>
+                    <tr th:each="product : ${products}" class="hover:bg-slate-50 transition-colors">
+                        <td class="px-4 py-4 font-headline text-sm font-bold text-[#004692]" th:text="${product.id}">P001</td>
+                        <td class="px-4 py-4 text-sm font-semibold text-slate-900" th:text="${product.name}">Product name</td>
+                        <td class="px-4 py-4 text-sm text-slate-600" th:text="${product.category != null ? product.category.name : '-'}">Category</td>
+                        <td class="px-4 py-4 text-sm font-semibold text-slate-900 text-right" th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-headline font-bold text-slate-900">Categories</h3>
+                        <p class="text-sm text-slate-500">Nhom hang su dung chung trong toan bo he thong.</p>
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-slate-700 bg-slate-100 px-3 py-1.5 rounded-full" th:text="${categoryCount + ' records'}">0 records</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[520px] text-left border-collapse">
+                        <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Category ID</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Name</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Description</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                        <tr th:if="${#lists.isEmpty(categories)}">
+                            <td class="px-6 py-10 text-center text-sm text-slate-500" colspan="3">No category master data found.</td>
+                        </tr>
+                        <tr th:each="category : ${categories}" class="hover:bg-slate-50 transition-colors">
+                            <td class="px-4 py-4 font-headline text-sm font-bold text-[#004692]" th:text="${category.id}">C001</td>
+                            <td class="px-4 py-4 text-sm font-semibold text-slate-900" th:text="${category.name}">Category name</td>
+                            <td class="px-4 py-4 text-sm text-slate-600" th:text="${category.description != null && !category.description.isBlank() ? category.description : '-'}">Description</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-headline font-bold text-slate-900">Suppliers</h3>
+                        <p class="text-sm text-slate-500">Danh sach nha cung cap dung chung de tham chieu trong nghiep vu nhap hang.</p>
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full" th:text="${supplierCount + ' records'}">0 records</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[640px] text-left border-collapse">
+                        <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Supplier ID</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Name</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Phone</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Address</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                        <tr th:if="${#lists.isEmpty(suppliers)}">
+                            <td class="px-6 py-10 text-center text-sm text-slate-500" colspan="4">No supplier master data found.</td>
+                        </tr>
+                        <tr th:each="supplier : ${suppliers}" class="hover:bg-slate-50 transition-colors">
+                            <td class="px-4 py-4 font-headline text-sm font-bold text-[#004692]" th:text="${supplier.id}">S001</td>
+                            <td class="px-4 py-4 text-sm font-semibold text-slate-900" th:text="${supplier.name}">Supplier name</td>
+                            <td class="px-4 py-4 text-sm text-slate-700" th:text="${supplier.phoneNumber}">0123456789</td>
+                            <td class="px-4 py-4 text-sm text-slate-600" th:text="${supplier.address}">Address</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
 </main>
 </body>
 </html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html class="light" lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Branch WMS - Customer Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_parameter" th:content="${_csrf.parameterName}"/>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Manrope', sans-serif; }
+        .sidebar-link {
+            transition: transform 160ms cubic-bezier(.2,.8,.2,1), background-color 160ms ease, color 160ms ease, opacity 160ms ease;
+            transform-origin: left center;
+        }
+        .sidebar-link:active,
+        .sidebar-link.pressed {
+            transform: translateX(6px) scale(0.995);
+            opacity: 0.98;
+        }
+    </style>
+</head>
+<body class="bg-[#f4faff] text-[#111d23]">
+<div th:replace="sidebar :: sidebar"></div>
+<main id="site-main" class="ml-64 min-h-screen flex flex-col">
+    <header class="bg-[#f4faff] flex justify-between items-center w-full px-6 py-3 border-b border-slate-200">
+        <div class="flex items-center gap-4">
+            <h1 class="text-lg font-black font-headline">Customer Management</h1>
+            <div class="h-4 w-px bg-slate-300/60"></div>
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#005FB8] text-sm">storefront</span>
+                <span class="text-xs font-bold text-slate-600 tracking-wide" th:text="${currentStation.name + ' - ' + currentStation.id}">Station</span>
+            </div>
+        </div>
+        <div class="text-xs font-headline font-bold text-slate-500">Customer data for sale orders</div>
+    </header>
+
+    <div class="p-8 space-y-8">
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-6 py-6 border-b border-slate-200 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h2 class="text-3xl font-headline font-extrabold tracking-tight">Customer directory</h2>
+                    <p class="mt-2 text-sm text-slate-500">Luu tru danh sach khach hang de nhan vien chon nhanh khi tao sale order.</p>
+                </div>
+                <button id="open-create-customer" class="inline-flex items-center justify-center gap-2 rounded-lg bg-[#004692] px-4 py-3 text-sm font-bold text-white shadow-sm hover:opacity-90 transition-opacity" type="button">
+                    <span class="material-symbols-outlined text-sm">person_add</span>
+                    Add Customer
+                </button>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total customers</div>
+                    <div id="customer-count-value" class="mt-3 text-3xl font-headline font-black text-[#004692]" th:text="${customerCount}">0</div>
+                    <div class="mt-1 text-sm text-slate-500">Tong so ma khach hang dang quan ly</div>
+                </div>
+                <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Top customer in station</div>
+                    <div class="mt-3 text-2xl font-headline font-black text-slate-900"
+                         th:text="${topCustomer != null ? topCustomer.customerName() : 'No orders yet'}">No orders yet</div>
+                    <div class="mt-1 text-sm text-slate-500"
+                         th:text="${topCustomer != null ? (topCustomer.orderCount() + ' sale orders at ' + currentStation.id) : 'Chua co sale order nao trong tram hien tai'}">Station scoped summary</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="customer-async-message" class="hidden rounded-xl px-4 py-3 text-sm font-semibold"></section>
+
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-headline font-bold text-slate-900">Customer list</h3>
+                    <p class="text-sm text-slate-500">Tim nhanh theo ma, ten, so dien thoai; sau do sua truc tiep khi can.</p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <div class="relative w-full md:w-80">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+                        <input id="customer-search" class="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-4 text-sm focus:border-[#004692] focus:ring-[#004692]" placeholder="Search by ID, name, phone" type="text"/>
+                    </div>
+                    <button id="open-create-customer-secondary" class="inline-flex items-center justify-center gap-2 rounded-lg bg-[#004692] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:opacity-90 transition-opacity" type="button">
+                        <span class="material-symbols-outlined text-sm">add</span>
+                        New Customer
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[980px] text-left border-collapse">
+                    <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Customer ID</th>
+                        <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Name</th>
+                        <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Phone</th>
+                        <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Address</th>
+                        <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider text-right">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody id="customer-table-body" class="divide-y divide-slate-200">
+                    <tr id="customer-empty-row" th:if="${#lists.isEmpty(customers)}">
+                        <td class="px-6 py-10 text-center text-sm text-slate-500" colspan="5">No customer records yet.</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 transition-colors customer-row"
+                        th:each="customer : ${customers}"
+                        th:attr="data-customer-id=${customer.id},data-customer-name=${customer.name},data-customer-phone=${customer.phoneNumber},data-customer-address=${customer.address},data-search=${#strings.toLowerCase(customer.id + ' ' + customer.name + ' ' + customer.phoneNumber + ' ' + customer.address)}">
+                        <td class="px-4 py-4 font-headline text-sm font-bold text-[#004692]" th:text="${customer.id}">CUS001</td>
+                        <td class="px-4 py-4 text-sm font-semibold text-slate-900" th:text="${customer.name}">Customer Name</td>
+                        <td class="px-4 py-4 text-sm text-slate-700" th:text="${customer.phoneNumber}">0123456789</td>
+                        <td class="px-4 py-4 text-sm text-slate-600" th:text="${customer.address}">Address</td>
+                        <td class="px-4 py-4 text-right">
+                            <button class="open-edit-customer inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 transition-colors"
+                                    th:attr="data-customer-id=${customer.id},data-customer-name=${customer.name},data-customer-phone=${customer.phoneNumber},data-customer-address=${customer.address}"
+                                    type="button">
+                                <span class="material-symbols-outlined text-sm">edit</span>
+                                Edit
+                            </button>
+                            <button class="open-delete-customer ml-2 inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-100 transition-colors"
+                                    th:attr="data-customer-id=${customer.id},data-customer-name=${customer.name}"
+                                    type="button">
+                                <span class="material-symbols-outlined text-sm">delete</span>
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div id="customer-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/40 px-4">
+        <div class="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow-xl">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h3 id="customer-modal-title" class="text-lg font-headline font-bold text-slate-900">Add customer</h3>
+                    <p id="customer-modal-subtitle" class="mt-1 text-sm font-medium text-slate-500">Create a customer profile for sale orders.</p>
+                </div>
+                <button id="close-customer-modal" class="rounded-md p-1 text-slate-500 hover:bg-slate-100" type="button" aria-label="Close modal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form id="customer-form" class="mt-5 space-y-4" th:attr="data-create-url=@{/customer/create-ajax},data-update-url=@{/customer/update-ajax},data-delete-url=@{/customer/delete-ajax}">
+                <input id="customer-form-mode" type="hidden" value="create"/>
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-bold tracking-wider text-slate-500 uppercase" for="customer-id-field">Customer ID</label>
+                    <input id="customer-id-field" name="customerId" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#004692] focus:ring-[#004692]" maxlength="255" placeholder="Example: CUS001" required type="text"/>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-bold tracking-wider text-slate-500 uppercase" for="customer-name-field">Customer name</label>
+                    <input id="customer-name-field" name="name" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#004692] focus:ring-[#004692]" maxlength="255" placeholder="Enter customer name" required type="text"/>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-bold tracking-wider text-slate-500 uppercase" for="customer-phone-field">Phone number</label>
+                    <input id="customer-phone-field" name="phoneNumber" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#004692] focus:ring-[#004692]" maxlength="15" placeholder="Enter phone number" required type="text"/>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-bold tracking-wider text-slate-500 uppercase" for="customer-address-field">Address</label>
+                    <textarea id="customer-address-field" name="address" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#004692] focus:ring-[#004692]" maxlength="255" placeholder="Enter address" required rows="3"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button id="cancel-customer-modal" class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" type="button">Cancel</button>
+                    <button id="delete-customer-button" class="hidden inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 transition-colors" type="button">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                        Delete
+                    </button>
+                    <button id="submit-customer-form" class="inline-flex items-center justify-center gap-2 rounded-lg bg-[#004692] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:opacity-90 transition-opacity" type="submit">
+                        <span class="material-symbols-outlined text-sm">save</span>
+                        Save Customer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<script defer th:src="@{/js/customer.js}"></script>
+</body>
+</html>

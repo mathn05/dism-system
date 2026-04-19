@@ -1,10 +1,41 @@
 (function () {
   'use strict';
 
+  const loadedScriptUrls = new Set(
+    Array.from(document.querySelectorAll('script[src]')).map(function (script) {
+      return script.src;
+    })
+  );
   let sidebarBound = false;
   const NAV_DELAY = 140;
 
-  async function appInitMain() {
+  function loadPageScripts(doc) {
+    const scripts = Array.from(doc.querySelectorAll('script[src]'));
+    return Promise.all(scripts.map(function (script) {
+      const src = script.src;
+      if (!src || loadedScriptUrls.has(src)) {
+        return Promise.resolve();
+      }
+
+      return new Promise(function (resolve, reject) {
+        const element = document.createElement('script');
+        element.src = src;
+        if (script.defer) element.defer = true;
+        element.onload = function () {
+          loadedScriptUrls.add(src);
+          resolve();
+        };
+        element.onerror = reject;
+        document.body.appendChild(element);
+      });
+    }));
+  }
+
+  async function initInventoryPage() {
+    if (!document.getElementById('adjust-modal-form') || !document.getElementById('inventory-table-body')) {
+      return;
+    }
+
     const modal = document.getElementById('inventory-adjust-modal');
     const closeModalButton = document.getElementById('close-adjust-modal');
     const form = document.getElementById('adjust-modal-form');
@@ -12,6 +43,7 @@
     const asyncMessage = document.getElementById('inventory-async-message');
     const successMessage = document.getElementById('inventory-success-message');
     const errorMessage = document.getElementById('inventory-error-message');
+    const trackedProductsValue = document.getElementById('tracked-products-value');
     const totalUnitsValue = document.getElementById('total-units-value');
     const lowStockCountValue = document.getElementById('low-stock-count-value');
     const lowStockThresholdLabel = document.getElementById('low-stock-threshold-label');
@@ -20,6 +52,8 @@
     const modalCurrentQuantity = document.getElementById('modal-current-quantity');
     const modalQuantity = document.getElementById('modal-quantity');
     const inventorySearch = document.getElementById('inventory-search');
+    const deleteInventoryItemButton = document.getElementById('delete-inventory-item');
+    const deleteUrl = form ? form.dataset.adjustUrl.replace('/adjust-ajax', '/delete-ajax') : '';
 
     function showModal() {
       if (!modal) return;
@@ -63,11 +97,52 @@
       });
     }
 
+    function renderEmptyState() {
+      const tableBody = document.getElementById('inventory-table-body');
+      if (!tableBody) return;
+
+      const existing = document.getElementById('inventory-empty-row');
+      const hasRows = tableBody.querySelector('.inventory-row');
+      if (!hasRows && !existing) {
+        const row = document.createElement('tr');
+        row.id = 'inventory-empty-row';
+        row.innerHTML = '<td class="px-6 py-10 text-center text-sm text-slate-500" colspan="5">No inventory has been recorded for this station yet.</td>';
+        tableBody.appendChild(row);
+      }
+      if (hasRows && existing) {
+        existing.remove();
+      }
+    }
+
+    function updateSummary(data) {
+      if (trackedProductsValue && typeof data.trackedProducts !== 'undefined') trackedProductsValue.textContent = String(data.trackedProducts);
+      if (totalUnitsValue) totalUnitsValue.textContent = String(data.totalUnits);
+      if (lowStockCountValue) lowStockCountValue.textContent = String(data.lowStockCount);
+      if (lowStockThresholdLabel) lowStockThresholdLabel.textContent = '\u2264 ' + data.lowStockThreshold + ' units';
+    }
+
+    function sortRows() {
+      const tableBody = document.getElementById('inventory-table-body');
+      if (!tableBody) return;
+
+      const rows = Array.from(tableBody.querySelectorAll('.inventory-row'));
+      rows.sort(function (a, b) {
+        const stockDiff = Number(a.dataset.stockQuantity || '0') - Number(b.dataset.stockQuantity || '0');
+        if (stockDiff !== 0) return stockDiff;
+        return Number(a.dataset.defaultOrder || '0') - Number(b.dataset.defaultOrder || '0');
+      });
+
+      rows.forEach(function (row) {
+        tableBody.appendChild(row);
+      });
+    }
+
     function updateRowAndSummary(data) {
       const productId = String(data.productId || '');
       const row = document.querySelector('tr[data-product-id="' + productId + '"]');
       if (row) {
         row.dataset.currentQuantity = String(data.updatedQuantity);
+        row.dataset.stockQuantity = String(data.updatedQuantity);
         const stockValue = row.querySelector('.stock-value');
         const stockWrapper = row.querySelector('.stock-value-wrapper');
         const stockBar = row.querySelector('.stock-bar');
@@ -75,18 +150,18 @@
         const threshold = Number(data.lowStockThreshold || 0);
         const isLowStock = Number(data.updatedQuantity) <= threshold;
         if (stockWrapper) {
-          stockWrapper.classList.toggle('text-error', isLowStock);
-          stockWrapper.classList.toggle('text-on-surface', !isLowStock);
+          stockWrapper.classList.toggle('text-red-600', isLowStock);
+          stockWrapper.classList.toggle('text-slate-900', !isLowStock);
         }
         if (stockBar) {
-          stockBar.classList.toggle('bg-error', isLowStock);
-          stockBar.classList.toggle('bg-primary', !isLowStock);
+          stockBar.classList.toggle('bg-red-500', isLowStock);
+          stockBar.classList.toggle('bg-[#004692]', !isLowStock);
           stockBar.style.width = Math.min(Number(data.updatedQuantity), 100) + '%';
         }
       }
-      if (totalUnitsValue) totalUnitsValue.textContent = String(data.totalUnits);
-      if (lowStockCountValue) lowStockCountValue.textContent = String(data.lowStockCount);
-      if (lowStockThresholdLabel) lowStockThresholdLabel.textContent = '\u2264 ' + data.lowStockThreshold + ' units';
+      updateSummary(data);
+      renderEmptyState();
+      sortRows();
     }
 
     if (form) {
@@ -110,6 +185,48 @@
       document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape' && modal && !modal.classList.contains('hidden')) hideModal();
       });
+
+      if (deleteInventoryItemButton) {
+        deleteInventoryItemButton.addEventListener('click', async function () {
+          const productId = modalProductId ? modalProductId.value.trim() : '';
+          if (!productId) return;
+          if (!window.confirm('Delete this product from inventory?')) return;
+
+          const csrfField = form.querySelector('input[type="hidden"][name]');
+          const payload = new URLSearchParams();
+          payload.set('productId', productId);
+          if (csrfField && csrfField.name) {
+            payload.set(csrfField.name, csrfField.value);
+          }
+
+          try {
+            const response = await fetch(deleteUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+              body: payload.toString()
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+              showAsyncMessage(false, data.message || 'Unable to delete product.');
+              return;
+            }
+
+            updateRowAndSummary({
+              productId: data.productId,
+              updatedQuantity: 0,
+              deleted: true,
+              trackedProducts: data.trackedProducts,
+              totalUnits: data.totalUnits,
+              lowStockCount: data.lowStockCount,
+              lowStockThreshold: data.lowStockThreshold
+            });
+            showAsyncMessage(true, data.message || 'Product deleted from inventory.');
+            hideModal();
+          } catch (_) {
+            showAsyncMessage(false, 'Network error while deleting product. Please try again.');
+          }
+        });
+      }
 
       form.addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -141,6 +258,8 @@
     }
 
     wireOpenModalButtons();
+    renderEmptyState();
+    sortRows();
 
     if (inventorySearch) {
       inventorySearch.addEventListener('input', function () {
@@ -260,7 +379,10 @@
 
       currentMain.replaceWith(newMain);
       if (doc.title) document.title = doc.title;
-      await appInitMain();
+      await loadPageScripts(doc);
+      if (typeof window.initInventoryPage === 'function') await window.initInventoryPage();
+      if (typeof window.initCustomerPage === 'function') await window.initCustomerPage();
+      if (typeof window.initOrderPage === 'function') await window.initOrderPage();
 
       if (addToHistory) {
         history.pushState({ pjax: true }, '', url);
@@ -279,12 +401,12 @@
     });
   });
 
-  window.appInitMain = appInitMain;
+  window.initInventoryPage = initInventoryPage;
   window.appLoadMain = appLoadMain;
 
   document.addEventListener('DOMContentLoaded', function () {
     const main = document.querySelector('main');
     if (main && !main.id) main.id = 'site-main';
-    appInitMain().catch(function () {});
+    initInventoryPage().catch(function () {});
   });
 })();

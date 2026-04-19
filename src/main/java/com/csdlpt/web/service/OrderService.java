@@ -9,6 +9,8 @@ import java.util.List;
 
 @Service
 public class OrderService {
+    public record TopCustomerSummary(String customerId, String customerName, long orderCount) {}
+
     private final OrderRepository orderRepository;
 
     public OrderService(OrderRepository orderRepository) {
@@ -43,5 +45,15 @@ public class OrderService {
 
         return orderRepository.findById(id).orElse(null);
     }
-}
 
+    public TopCustomerSummary findTopCustomerByStation(String stationId) {
+        return orderRepository.findTopCustomersByStation(stationId).stream()
+            .findFirst()
+            .map(result -> new TopCustomerSummary(
+                String.valueOf(result[0]),
+                String.valueOf(result[1]),
+                ((Number) result[2]).longValue()
+            ))
+            .orElse(null);
+    }
+}

@@ -47,7 +47,7 @@
     <section class="grid grid-cols-1 md:grid-cols-4 gap-6">
       <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
         <span class="text-[0.6875rem] font-bold text-slate-500 uppercase tracking-widest">Tracked products</span>
-        <div class="mt-4 text-4xl font-headline font-black text-[#004692]" th:text="${trackedProducts}">0</div>
+        <div id="tracked-products-value" class="mt-4 text-4xl font-headline font-black text-[#004692]" th:text="${trackedProducts}">0</div>
       </div>
       <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
         <span class="text-[0.6875rem] font-bold text-slate-500 uppercase tracking-widest">Total units</span>
@@ -101,8 +101,8 @@
             <p class="text-sm text-slate-500">Danh sach san pham va so luong hien co tai chi nhanh.</p>
           </div>
           <div class="relative w-full md:w-72">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
-            <input id="inventory-search" class="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-4 text-sm focus:border-[#004692] focus:ring-[#004692]" placeholder="Tim theo ma, ten, nhom..." type="text"/>
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+              <input id="inventory-search" class="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-4 text-sm focus:border-[#004692] focus:ring-[#004692]" placeholder="Tim theo ma, ten, nhom..." type="text"/>
           </div>
         </div>
         <div class="overflow-x-auto md:overflow-x-visible">
@@ -117,11 +117,11 @@
             </tr>
             </thead>
             <tbody id="inventory-table-body" class="divide-y divide-slate-200">
-            <tr th:if="${#lists.isEmpty(inventoryItems)}">
+            <tr id="inventory-empty-row" th:if="${#lists.isEmpty(inventoryItems)}">
               <td class="px-6 py-10 text-center text-sm text-slate-500" colspan="5">No inventory has been recorded for this station yet.</td>
             </tr>
-            <tr class="hover:bg-slate-50 transition-colors group inventory-row" th:each="item : ${inventoryItems}"
-                th:attr="data-product-id=${item.product.id},data-current-quantity=${item.quantity},data-search=${#strings.toLowerCase(item.product.id + ' ' + item.product.name + ' ' + item.product.category.name)}">
+            <tr class="hover:bg-slate-50 transition-colors group inventory-row" th:each="item, itemStat : ${inventoryItems}"
+                th:attr="data-product-id=${item.product.id},data-current-quantity=${item.quantity},data-stock-quantity=${item.quantity},data-default-order=${itemStat.index},data-search=${#strings.toLowerCase(item.product.id + ' ' + item.product.name + ' ' + item.product.category.name)}">
               <td class="px-4 py-4 font-headline text-sm font-bold text-[#004692] whitespace-nowrap" th:text="${item.product.id}">SKU</td>
               <td class="px-4 py-4">
                 <span class="text-sm font-semibold text-slate-900 block break-words" th:text="${item.product.name}">Product name</span>
@@ -175,6 +175,10 @@
           <button class="inline-flex h-10 items-center justify-center rounded-lg bg-[#004692]/10 text-sm font-bold text-[#004692] hover:bg-[#004692]/20" data-operation="increase" type="submit">+ Add</button>
           <button class="inline-flex h-10 items-center justify-center rounded-lg bg-red-50 text-sm font-bold text-red-600 hover:bg-red-100" data-operation="decrease" type="submit">- Deduct</button>
         </div>
+        <button id="delete-inventory-item" class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-red-200 bg-white text-sm font-bold text-red-600 hover:bg-red-50" type="button">
+          <span class="material-symbols-outlined text-sm">delete</span>
+          Delete Product
+        </button>
       </form>
     </div>
   </div>

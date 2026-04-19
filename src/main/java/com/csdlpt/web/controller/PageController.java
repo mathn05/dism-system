@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.csdlpt.web.entity.Station;
 import com.csdlpt.web.entity.OrderType;
+import com.csdlpt.web.repository.CategoryRepository;
+import com.csdlpt.web.repository.ProductRepository;
 import com.csdlpt.web.repository.StationRepository;
+import com.csdlpt.web.repository.SupplierRepository;
 import com.csdlpt.web.security.AppUserPrincipal;
 import com.csdlpt.web.service.InventoryService;
 import com.csdlpt.web.service.OrderService;
@@ -19,13 +22,22 @@ public class PageController {
     private final StationRepository stationRepository;
     private final InventoryService inventoryService;
     private final OrderService orderService;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final SupplierRepository supplierRepository;
 
     public PageController(StationRepository stationRepository,
                           InventoryService inventoryService,
-                          OrderService orderService) {
+                          OrderService orderService,
+                          ProductRepository productRepository,
+                          CategoryRepository categoryRepository,
+                          SupplierRepository supplierRepository) {
         this.stationRepository = stationRepository;
         this.inventoryService = inventoryService;
         this.orderService = orderService;
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+        this.supplierRepository = supplierRepository;
     }
 
     @GetMapping("/login")
@@ -57,6 +69,12 @@ public class PageController {
     @GetMapping("/masterdata")
     public String masterDataPage(Authentication authentication, Model model) {
         addCurrentStation(authentication, model);
+        model.addAttribute("products", productRepository.findAllByOrderByIdAsc());
+        model.addAttribute("categories", categoryRepository.findAllByOrderByIdAsc());
+        model.addAttribute("suppliers", supplierRepository.findAllByOrderByIdAsc());
+        model.addAttribute("productCount", productRepository.count());
+        model.addAttribute("categoryCount", categoryRepository.count());
+        model.addAttribute("supplierCount", supplierRepository.count());
         return "masterdata";
     }
 

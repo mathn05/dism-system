@@ -19,6 +19,8 @@ import com.csdlpt.web.repository.StationRepository;
 @Transactional
 public class InventoryService {
 
+    public record AdjustmentResult(String productId, int updatedQuantity) {}
+
     private final InventoryRepository inventoryRepository;
     private final ProductRepository productRepository;
     private final StationRepository stationRepository;
@@ -51,14 +53,14 @@ public class InventoryService {
         return inventoryRepository.sumQuantityByStationId(normalizeStationId(stationId));
     }
 
-    public Inventory receiveStock(String stationId, String productId, int quantity) {
+    public AdjustmentResult receiveStock(String stationId, String productId, int quantity) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than zero");
         }
         return adjustQuantity(stationId, productId, quantity);
     }
 
-    public Inventory adjustQuantity(String stationId, String productId, int delta) {
+    public AdjustmentResult adjustQuantity(String stationId, String productId, int delta) {
         if (delta == 0) {
             throw new IllegalArgumentException("Adjustment cannot be zero");
         }
@@ -82,7 +84,18 @@ public class InventoryService {
         }
 
         inventory.setQuantity(nextQuantity);
-        return inventoryRepository.save(inventory);
+        Inventory savedInventory = inventoryRepository.save(inventory);
+        return new AdjustmentResult(savedInventory.getProduct().getId(), savedInventory.getQuantity());
+    }
+
+    public void deleteInventoryItem(String stationId, String productId) {
+        String normalizedStationId = normalizeStationId(stationId);
+        String normalizedProductId = normalizeProductId(productId);
+
+        Inventory inventory = inventoryRepository.findByStation_IdAndProduct_Id(normalizedStationId, normalizedProductId)
+            .orElseThrow(() -> new IllegalArgumentException("Product does not exist in this station"));
+
+        inventoryRepository.delete(inventory);
     }
 
     private Inventory createInventory(String stationId, String productId) {

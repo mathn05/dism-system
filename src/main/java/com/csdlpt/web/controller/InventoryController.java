@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.csdlpt.web.entity.Inventory;
 import com.csdlpt.web.entity.Station;
 import com.csdlpt.web.repository.StationRepository;
 import com.csdlpt.web.security.AppUserPrincipal;
 import com.csdlpt.web.service.InventoryService;
+import com.csdlpt.web.service.InventoryService.AdjustmentResult;
 
 @Controller
 public class InventoryController {
@@ -57,12 +57,13 @@ public class InventoryController {
         try {
             Station currentStation = loadCurrentStation(principal);
             int delta = mapAdjustmentDelta(quantity, operation);
-            Inventory updatedInventory = inventoryService.adjustQuantity(currentStation.getId(), productId, delta);
+            AdjustmentResult adjustmentResult = inventoryService.adjustQuantity(currentStation.getId(), productId, delta);
 
             response.put("success", true);
             response.put("message", "Stock updated successfully.");
-            response.put("productId", updatedInventory.getProduct().getId());
-            response.put("updatedQuantity", updatedInventory.getQuantity());
+            response.put("productId", adjustmentResult.productId());
+            response.put("updatedQuantity", adjustmentResult.updatedQuantity());
+            response.put("trackedProducts", inventoryService.getTrackedProductCount(currentStation.getId()));
             response.put("totalUnits", inventoryService.getTotalQuantity(currentStation.getId()));
             response.put("lowStockCount", inventoryService.getLowStockCount(currentStation.getId(), LOW_STOCK_THRESHOLD));
             response.put("lowStockThreshold", LOW_STOCK_THRESHOLD);
@@ -86,6 +87,31 @@ public class InventoryController {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }
         return "redirect:/inventory";
+    }
+
+    @PostMapping("/inventory/delete-ajax")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteInventoryItem(@AuthenticationPrincipal AppUserPrincipal principal,
+                                                                   @RequestParam String productId) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Station currentStation = loadCurrentStation(principal);
+            inventoryService.deleteInventoryItem(currentStation.getId(), productId);
+
+            response.put("success", true);
+            response.put("message", "Product deleted from inventory.");
+            response.put("productId", productId.trim());
+            response.put("trackedProducts", inventoryService.getTrackedProductCount(currentStation.getId()));
+            response.put("totalUnits", inventoryService.getTotalQuantity(currentStation.getId()));
+            response.put("lowStockCount", inventoryService.getLowStockCount(currentStation.getId(), LOW_STOCK_THRESHOLD));
+            response.put("lowStockThreshold", LOW_STOCK_THRESHOLD);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException ex) {
+            response.put("success", false);
+            response.put("message", ex.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
     private Station loadCurrentStation(AppUserPrincipal principal) {

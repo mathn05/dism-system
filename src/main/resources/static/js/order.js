@@ -48,9 +48,10 @@
         box.classList.remove('hidden');
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    function initOrderPage() {
         const createForm = document.querySelector('form[action$="/order/create"]');
-        if (!createForm) return;
+        if (!createForm || createForm.dataset.bound === 'true') return;
+        createForm.dataset.bound = 'true';
 
         createForm.addEventListener('submit', function (event) {
             event.preventDefault();
@@ -65,5 +66,11 @@
                     renderMessage('error', error.message || 'Failed to create order.');
                 });
         });
+    }
+
+    window.initOrderPage = initOrderPage;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initOrderPage();
     });
 })();
