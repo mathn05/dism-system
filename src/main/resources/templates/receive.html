@@ -1,403 +1,45 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Branch WMS - Receive from Hub</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          "colors": {
-            "surface-container-highest": "#d7e4ec",
-            "tertiary-fixed": "#ffdbcb",
-            "secondary-fixed": "#cbe7f5",
-            "secondary-fixed-dim": "#afcbd8",
-            "on-tertiary-fixed": "#341100",
-            "on-primary-fixed": "#001b3f",
-            "secondary-container": "#cbe7f5",
-            "surface-tint": "#255dad",
-            "on-secondary": "#ffffff",
-            "tertiary-container": "#a04401",
-            "on-surface-variant": "#424752",
-            "error-container": "#ffdad6",
-            "tertiary": "#7b3200",
-            "surface-dim": "#cfdce4",
-            "outline": "#727783",
-            "on-primary-fixed-variant": "#00458f",
-            "inverse-primary": "#abc7ff",
-            "surface-container-lowest": "#ffffff",
-            "on-error": "#ffffff",
-            "tertiary-fixed-dim": "#ffb691",
-            "background": "#f4faff",
-            "on-tertiary-container": "#ffd1bc",
-            "surface-container-high": "#ddeaf2",
-            "on-surface": "#111d23",
-            "primary-fixed": "#d7e2ff",
-            "on-secondary-fixed-variant": "#304a55",
-            "primary": "#004692",
-            "inverse-surface": "#263238",
-            "on-error-container": "#93000a",
-            "on-secondary-fixed": "#021f29",
-            "on-background": "#111d23",
-            "on-secondary-container": "#4e6874",
-            "outline-variant": "#c2c6d4",
-            "surface-container-low": "#e9f6fd",
-            "surface": "#f4faff",
-            "primary-fixed-dim": "#abc7ff",
-            "on-tertiary": "#ffffff",
-            "surface-variant": "#d7e4ec",
-            "secondary": "#48626e",
-            "primary-container": "#275fae",
-            "on-primary": "#ffffff",
-            "surface-bright": "#f4faff",
-            "inverse-on-surface": "#e6f3fb",
-            "on-primary-container": "#cbdbff",
-            "surface-container": "#e3f0f8",
-            "error": "#ba1a1a",
-            "on-tertiary-fixed-variant": "#783100"
-          },
-          "borderRadius": {
-            "DEFAULT": "0.125rem",
-            "lg": "0.25rem",
-            "xl": "0.5rem",
-            "full": "0.75rem"
-          },
-          "fontFamily": {
-            "headline": ["Manrope"],
-            "body": ["Inter"],
-            "label": ["Inter"]
-          }
-        },
-      },
-    }
-  </script>
-  <style>
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-    body { font-family: 'Inter', sans-serif; }
-    h1, h2, h3 { font-family: 'Manrope', sans-serif; }
-    .glass-panel {
-      background: rgba(215, 228, 236, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(194, 198, 212, 0.15);
-    }
-  </style>
+<html class="light" lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Branch WMS - Receive</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Manrope', sans-serif; }
+    </style>
 </head>
-<body class="bg-background text-on-background min-h-screen flex">
-<!-- SideNavBar -->
-<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-[#cfdce4] dark:bg-[#1c2b33] flex flex-col border-r border-[#c2c6d4]/15">
-  <div class="px-6 py-8">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-primary flex items-center justify-center rounded-lg shadow-inner">
-        <span class="material-symbols-outlined text-white" data-icon="warehouse">warehouse</span>
-      </div>
-      <div>
-        <h1 class="font-['Manrope'] font-extrabold text-[#004692] leading-none" th:text="${currentStation.name}">Branch Alpha</h1>
-        <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mt-1" th:text="${currentStation.address}">Precision Logistics</p>
-      </div>
-    </div>
-  </div>
-  <nav class="flex-grow font-['Inter'] font-medium text-sm antialiased mt-4">
-    <a class="text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors scale-95 active:scale-100 transition-transform" href="#">
-      <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
-      Dashboard
-    </a>
-    <a class="text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors scale-95 active:scale-100 transition-transform" href="#">
-      <span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
-      Inventory
-    </a>
-    <!-- Active Tab: Transactions -->
-    <div class="space-y-1">
-      <a class="bg-[#005FB8] text-white rounded-lg shadow-sm mx-2 my-1 px-4 py-3 flex items-center justify-between transition-transform" href="#">
-        <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined" data-icon="swap_horiz">swap_horiz</span>
-          Transactions
+<body class="bg-[#f4faff] text-[#111d23]">
+<div th:replace="sidebar :: sidebar"></div>
+<main id="site-main" class="ml-64 min-h-screen p-8">
+    <header class="mb-8">
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#005FB8]">Receive</p>
+        <h1 class="mt-2 text-3xl font-headline font-extrabold">Inbound workflow</h1>
+        <p class="mt-2 text-sm text-slate-600">Trang này được giữ lại cho chức năng nhận hàng sau này, nhưng hiện đã bỏ các thành phần trình diễn không cần thiết.</p>
+    </header>
+
+    <section class="grid gap-6 lg:grid-cols-3">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-headline font-bold">1. Tạo transfer</h2>
+            <p class="mt-2 text-sm text-slate-600">Tạo order kiểu `TRANSFER` từ kho nguồn tới chi nhánh hiện tại.</p>
         </div>
-        <span class="material-symbols-outlined text-xs">expand_more</span>
-      </a>
-      <div class="ml-10 mr-4 space-y-1">
-        <a class="block py-2 px-3 text-[#005FB8] font-bold text-xs bg-[#e3f0f8] rounded-md" href="#">Receive from Hub</a>
-        <a class="block py-2 px-3 text-[#424752] hover:text-[#005FB8] text-xs transition-colors" href="#">Transfer History</a>
-      </div>
-    </div>
-    <a class="text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors scale-95 active:scale-100 transition-transform" href="#">
-      <span class="material-symbols-outlined" data-icon="database">database</span>
-      Master Data
-    </a>
-  </nav>
-  <div class="p-4 mt-auto border-t border-[#c2c6d4]/15">
-    <a class="text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors text-sm" href="#">
-      <span class="material-symbols-outlined" data-icon="settings">settings</span>
-      Settings
-    </a>
-    <a class="text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors text-sm" href="#">
-      <span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
-      Support
-    </a>
-  </div>
-</aside>
-<!-- Main Content Area -->
-<main id="site-main" class="ml-64 flex-grow flex flex-col">
-  <!-- TopNavBar -->
-  <header class="bg-[#f4faff] dark:bg-[#111d23] flex justify-between items-center w-full px-8 py-4 sticky top-0 z-40 transition-all duration-200 ease-in-out">
-    <div class="flex items-center gap-4">
-      <span class="font-['Manrope'] font-bold tracking-tight text-sm text-[#005FB8]">Transactions</span>
-      <span class="text-outline-variant">/</span>
-      <span class="font-['Manrope'] font-bold tracking-tight text-sm text-on-surface">Receive from Hub</span>
-    </div>
-    <div class="flex items-center gap-6">
-      <div class="relative flex items-center">
-        <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-lg" data-icon="search">search</span>
-        <label class="sr-only" for="receive-search">Search Transfer ID</label>
-        <input class="bg-surface-container border-none rounded-full py-1.5 pl-10 pr-4 text-xs w-64 focus:ring-2 focus:ring-primary-container transition-all" id="receive-search" placeholder="Search Transfer ID..." type="text"/>
-      </div>
-        <div class="flex items-center gap-4 border-l border-outline-variant/30 pl-6">
-        <div class="text-right">
-          <p class="text-[10px] font-bold text-on-surface-variant leading-none uppercase tracking-tighter">Last Synced</p>
-          <p class="text-xs font-semibold text-[#005FB8]">2 mins ago</p>
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-headline font-bold">2. Xác nhận hàng</h2>
+            <p class="mt-2 text-sm text-slate-600">Đối chiếu chứng từ, số lượng, và sản phẩm khi hàng đến.</p>
         </div>
-        <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#e3f0f8] transition-colors">
-          <span class="material-symbols-outlined text-xl text-on-surface-variant" data-icon="sync">sync</span>
-        </button>
-        <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#e3f0f8] transition-colors relative">
-          <span class="material-symbols-outlined text-xl text-on-surface-variant" data-icon="notifications">notifications</span>
-          <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
-        </button>
-        <img alt="Station Manager Profile" class="w-9 h-9 rounded-full object-cover ring-2 ring-surface-container-high" data-alt="Professional portrait of a male warehouse manager in a subtle blue uniform, clear lighting, high-end office environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXyCXf0lS2NUx2o-Ji_BCy_errkbp3TNGP7FkG3Na8E6eFcg-JQsNqy9Cul-q427BbC9DqnH24mZ8ZWc07n37ho6XTIkThZ3epVi3Iq_fqYlbJgDQ1gnv5ajrIH2-91BDYPZUPx-6uMX-gR1723GaP-L6Ork8ERMNy4gglXawne85Ljicl_X2h-_cQFaB5RoeNdAto_DBgFMXxrFBJu9wRjHff-UAv-AIuF9HpnEnPxz5wHqNnFYmP_R7mvbdf6v7O7lFESz96t_U"/>
-        <!-- Logout in header -->
-        <form method="post" th:action="@{/logout}" class="ml-4">
-          <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
-          <button type="submit" class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-md">
-            <span class="material-symbols-outlined">logout</span>
-          </button>
-        </form>
-      </div>
-    </div>
-  </header>
-  <!-- Content Canvas -->
-  <div class="p-8 flex flex-col gap-8 flex-grow">
-    <!-- Hero Stats Row (Bento Style) -->
-    <div class="grid grid-cols-12 gap-6">
-      <div class="col-span-8 bg-surface-container-low p-6 rounded-xl flex flex-col justify-between relative overflow-hidden group">
-        <div class="relative z-10">
-          <h2 class="text-on-surface-variant font-bold text-xs uppercase tracking-widest mb-1">Live Inbound Stream</h2>
-          <div class="flex items-baseline gap-2">
-            <span class="text-5xl font-['Manrope'] font-extrabold text-on-surface tracking-tighter">14</span>
-            <span class="text-secondary font-medium">Active Shipments</span>
-          </div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-headline font-bold">3. Cập nhật tồn</h2>
+            <p class="mt-2 text-sm text-slate-600">Đi tới Inventory để cộng hàng vào tồn kho của chi nhánh.</p>
         </div>
-        <div class="flex gap-4 mt-8 relative z-10">
-          <div class="flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-lg">
-            <span class="w-2 h-2 bg-primary rounded-full"></span>
-            <span class="text-xs font-bold text-on-surface-variant">4 In Transit</span>
-          </div>
-          <div class="flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-lg">
-            <span class="w-2 h-2 bg-tertiary rounded-full"></span>
-            <span class="text-xs font-bold text-on-surface-variant">2 Delayed</span>
-          </div>
-        </div>
-        <!-- Decorative background element -->
-        <div class="absolute -right-12 -bottom-12 opacity-10 group-hover:scale-110 transition-transform duration-700">
-          <span class="material-symbols-outlined text-[12rem]" data-icon="local_shipping" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
-        </div>
-      </div>
-      <div class="col-span-4 bg-primary text-white p-6 rounded-xl flex flex-col justify-between shadow-lg shadow-primary/20">
-        <div>
-          <h2 class="text-on-primary-container font-bold text-xs uppercase tracking-widest mb-1">Queue Status</h2>
-          <p class="text-2xl font-['Manrope'] font-bold leading-tight">Ready for Unloading</p>
-        </div>
-        <div class="bg-primary-container/40 p-4 rounded-lg backdrop-blur-sm">
-          <div class="flex justify-between items-end mb-2">
-            <span class="text-xs text-on-primary-container">Dock Utilization</span>
-            <span class="text-lg font-bold">82%</span>
-          </div>
-          <div class="w-full bg-on-primary-container/20 h-1.5 rounded-full overflow-hidden">
-            <div class="bg-white h-full w-[82%]"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Transaction Table Section -->
-    <div class="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden flex flex-col border border-outline-variant/10">
-      <div class="px-6 py-5 flex items-center justify-between border-b border-outline-variant/10">
-        <div>
-          <h3 class="text-lg font-['Manrope'] font-bold text-on-surface">Pending Shipments</h3>
-          <p class="text-xs text-on-surface-variant">Incoming stock from Central Distribution Hub Alpha</p>
-        </div>
-        <div class="flex gap-2">
-          <button class="flex items-center gap-2 px-4 py-2 bg-surface-container text-on-surface-variant rounded-lg text-xs font-bold hover:bg-surface-container-high transition-colors">
-            <span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
-            Filter
-          </button>
-          <button class="flex items-center gap-2 px-4 py-2 bg-surface-container text-on-surface-variant rounded-lg text-xs font-bold hover:bg-surface-container-high transition-colors">
-            <span class="material-symbols-outlined text-sm" data-icon="download">download</span>
-            Export
-          </button>
-        </div>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-          <tr class="bg-surface-container-low">
-            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Transfer ID</th>
-            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Origin Hub</th>
-            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Item Count</th>
-            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">ETA</th>
-            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Status</th>
-            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest text-right">Actions</th>
-          </tr>
-          </thead>
-          <tbody class="divide-y divide-outline-variant/10">
-          <!-- Row 1 -->
-          <tr class="bg-surface hover:bg-surface-container-low/50 transition-colors">
-            <td class="px-6 py-4 font-mono text-sm text-primary font-bold">TRF-90234-A</td>
-            <td class="px-6 py-4">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-on-surface-variant text-base" data-icon="hub">hub</span>
-                <span class="text-sm font-medium text-on-surface">Central Hub North</span>
-              </div>
-            </td>
-            <td class="px-6 py-4">
-              <span class="text-sm text-on-surface font-semibold">1,240 units</span>
-            </td>
-            <td class="px-6 py-4">
-              <div class="flex flex-col">
-                <span class="text-sm font-bold text-on-surface">14:20 Today</span>
-                <span class="text-[10px] text-primary">In 45 mins</span>
-              </div>
-            </td>
-            <td class="px-6 py-4">
-<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-secondary-container text-on-secondary-container uppercase tracking-tight">
-                                        In Transit
-                                    </span>
-            </td>
-            <td class="px-6 py-4 text-right">
-              <button class="bg-[#004692] text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:brightness-110 active:scale-95 transition-all">
-                Receive Shipment
-              </button>
-            </td>
-          </tr>
-          <!-- Row 2 -->
-          <tr class="bg-surface-container-lowest hover:bg-surface-container-low/50 transition-colors">
-            <td class="px-6 py-4 font-mono text-sm text-primary font-bold">TRF-90231-X</td>
-            <td class="px-6 py-4">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-on-surface-variant text-base" data-icon="hub">hub</span>
-                <span class="text-sm font-medium text-on-surface">Regional Hub East</span>
-              </div>
-            </td>
-            <td class="px-6 py-4">
-              <span class="text-sm text-on-surface font-semibold">452 units</span>
-            </td>
-            <td class="px-6 py-4">
-              <div class="flex flex-col">
-                <span class="text-sm font-bold text-on-surface">16:45 Today</span>
-                <span class="text-[10px] text-on-surface-variant">On Schedule</span>
-              </div>
-            </td>
-            <td class="px-6 py-4">
-<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-secondary-container text-on-secondary-container uppercase tracking-tight">
-                                        In Transit
-                                    </span>
-            </td>
-            <td class="px-6 py-4 text-right">
-              <button class="bg-[#004692] text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:brightness-110 active:scale-95 transition-all">
-                Receive Shipment
-              </button>
-            </td>
-          </tr>
-          <!-- Row 3: Alert State -->
-          <tr class="bg-surface hover:bg-surface-container-low/50 transition-colors">
-            <td class="px-6 py-4 font-mono text-sm text-primary font-bold">TRF-89942-B</td>
-            <td class="px-6 py-4">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-on-surface-variant text-base" data-icon="hub">hub</span>
-                <span class="text-sm font-medium text-on-surface">Central Hub North</span>
-              </div>
-            </td>
-            <td class="px-6 py-4">
-              <span class="text-sm text-on-surface font-semibold">2,800 units</span>
-            </td>
-            <td class="px-6 py-4">
-              <div class="flex flex-col">
-                <span class="text-sm font-bold text-error">Delayed</span>
-                <span class="text-[10px] text-on-surface-variant">Revised: Tomorrow 09:00</span>
-              </div>
-            </td>
-            <td class="px-6 py-4">
-<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-error-container text-on-error-container uppercase tracking-tight">
-                                        Action Required
-                                    </span>
-            </td>
-            <td class="px-6 py-4 text-right">
-              <button class="border border-outline px-4 py-2 rounded-lg text-xs font-bold text-on-surface-variant hover:bg-surface-container transition-all">
-                View Details
-              </button>
-            </td>
-          </tr>
-          <!-- Row 4 -->
-          <tr class="bg-surface-container-lowest hover:bg-surface-container-low/50 transition-colors">
-            <td class="px-6 py-4 font-mono text-sm text-primary font-bold">TRF-90239-C</td>
-            <td class="px-6 py-4">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-on-surface-variant text-base" data-icon="hub">hub</span>
-                <span class="text-sm font-medium text-on-surface">Global Warehouse S2</span>
-              </div>
-            </td>
-            <td class="px-6 py-4">
-              <span class="text-sm text-on-surface font-semibold">18 units</span>
-            </td>
-            <td class="px-6 py-4">
-              <div class="flex flex-col">
-                <span class="text-sm font-bold text-on-surface">Arrived</span>
-                <span class="text-[10px] text-on-surface-variant text-success">Dock 04</span>
-              </div>
-            </td>
-            <td class="px-6 py-4">
-<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-surface-container-highest text-on-surface-variant uppercase tracking-tight">
-                                        At Gate
-                                    </span>
-            </td>
-            <td class="px-6 py-4 text-right">
-              <button class="bg-[#004692] text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:brightness-110 active:scale-95 transition-all">
-                Receive Shipment
-              </button>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="px-6 py-4 bg-surface-container-low flex items-center justify-between">
-        <span class="text-xs text-on-surface-variant font-medium">Showing 1-4 of 14 shipments</span>
-        <div class="flex gap-1">
-          <button class="w-8 h-8 flex items-center justify-center rounded bg-surface-container-lowest border border-outline-variant/10 text-on-surface-variant">
-            <span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span>
-          </button>
-          <button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white text-xs font-bold">1</button>
-          <button class="w-8 h-8 flex items-center justify-center rounded bg-surface-container-lowest border border-outline-variant/10 text-xs font-bold text-on-surface-variant">2</button>
-          <button class="w-8 h-8 flex items-center justify-center rounded bg-surface-container-lowest border border-outline-variant/10 text-on-surface-variant">
-            <span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <!-- Floating Sync Indicator -->
-    <div class="fixed bottom-6 right-6 glass-panel px-4 py-3 rounded-full flex items-center gap-3 shadow-xl shadow-on-surface/5 z-50">
-      <div class="relative">
-        <span class="material-symbols-outlined text-primary" data-icon="cloud_sync">cloud_sync</span>
-        <span class="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-      </div>
-      <div class="flex flex-col">
-        <span class="text-[10px] font-extrabold uppercase text-on-surface-variant tracking-wider leading-none">WMS Real-time Sync</span>
-        <span class="text-xs font-medium text-on-surface">Data connection stable</span>
-      </div>
-    </div>
-  </div>
+    </section>
+
+    <section class="mt-8 flex gap-3">
+        <a class="rounded-lg bg-[#004692] px-5 py-3 text-sm font-bold text-white hover:opacity-90" th:href="@{/order}">Open Orders</a>
+        <a class="rounded-lg bg-white px-5 py-3 text-sm font-bold text-slate-700 border border-slate-200 hover:bg-slate-50" th:href="@{/inventory}">Open Inventory</a>
+    </section>
 </main>
-</body></html>
+</body>
+</html>

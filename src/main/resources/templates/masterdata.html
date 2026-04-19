@@ -1,392 +1,63 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Branch WMS - Master Data</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          "colors": {
-            "surface-container-highest": "#d7e4ec",
-            "tertiary-fixed": "#ffdbcb",
-            "secondary-fixed": "#cbe7f5",
-            "secondary-fixed-dim": "#afcbd8",
-            "on-tertiary-fixed": "#341100",
-            "on-primary-fixed": "#001b3f",
-            "secondary-container": "#cbe7f5",
-            "surface-tint": "#255dad",
-            "on-secondary": "#ffffff",
-            "tertiary-container": "#a04401",
-            "on-surface-variant": "#424752",
-            "error-container": "#ffdad6",
-            "tertiary": "#7b3200",
-            "surface-dim": "#cfdce4",
-            "outline": "#727783",
-            "on-primary-fixed-variant": "#00458f",
-            "inverse-primary": "#abc7ff",
-            "surface-container-lowest": "#ffffff",
-            "on-error": "#ffffff",
-            "tertiary-fixed-dim": "#ffb691",
-            "background": "#f4faff",
-            "on-tertiary-container": "#ffd1bc",
-            "surface-container-high": "#ddeaf2",
-            "on-surface": "#111d23",
-            "primary-fixed": "#d7e2ff",
-            "on-secondary-fixed-variant": "#304a55",
-            "primary": "#004692",
-            "inverse-surface": "#263238",
-            "on-error-container": "#93000a",
-            "on-secondary-fixed": "#021f29",
-            "on-background": "#111d23",
-            "on-secondary-container": "#4e6874",
-            "outline-variant": "#c2c6d4",
-            "surface-container-low": "#e9f6fd",
-            "surface": "#f4faff",
-            "primary-fixed-dim": "#abc7ff",
-            "on-tertiary": "#ffffff",
-            "surface-variant": "#d7e4ec",
-            "secondary": "#48626e",
-            "primary-container": "#275fae",
-            "on-primary": "#ffffff",
-            "surface-bright": "#f4faff",
-            "inverse-on-surface": "#e6f3fb",
-            "on-primary-container": "#cbdbff",
-            "surface-container": "#e3f0f8",
-            "error": "#ba1a1a",
-            "on-tertiary-fixed-variant": "#783100"
-          },
-          "borderRadius": {
-            "DEFAULT": "0.125rem",
-            "lg": "0.25rem",
-            "xl": "0.5rem",
-            "full": "0.75rem"
-          },
-          "fontFamily": {
-            "headline": ["Manrope"],
-            "body": ["Inter"],
-            "label": ["Inter"]
-          }
-        },
-      },
-    }
-  </script>
-  <style>
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-    body { font-family: 'Inter', sans-serif; }
-    h1, h2, h3 { font-family: 'Manrope', sans-serif; }
-    .glass-overlay {
-      background: rgba(227, 240, 248, 0.7);
-      backdrop-filter: blur(12px);
-    }
-  </style>
+<html class="light" lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Branch WMS - Master Data</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Manrope', sans-serif; }
+    </style>
 </head>
-<body class="bg-background text-on-background min-h-screen flex">
-<!-- SideNavBar (Authority: JSON) -->
-<aside class="h-screen w-64 fixed left-0 top-0 z-50 flex flex-col bg-[#cfdce4] dark:bg-[#1c2b33] border-r border-[#c2c6d4]/15 font-['Inter'] font-medium text-sm antialiased">
-  <div class="px-6 py-8">
-    <div class="flex items-center gap-3 mb-10">
-      <div class="w-10 h-10 bg-primary rounded flex items-center justify-center text-white">
-        <span class="material-symbols-outlined" data-icon="warehouse" style="font-variation-settings: 'FILL' 1;">warehouse</span>
-      </div>
-      <div>
-        <h2 class="font-['Manrope'] font-extrabold text-[#004692] text-lg leading-tight" th:text="${currentStation.name}">Branch Alpha</h2>
-        <p class="text-xs text-on-secondary-container/70" th:text="${currentStation.address}">Precision Logistics</p>
-      </div>
-    </div>
-    <nav class="space-y-1">
-      <!-- Dashboard -->
-      <a class="flex items-center gap-3 text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors transition-transform scale-95 active:scale-100" href="#">
-        <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
-        <span>Dashboard</span>
-      </a>
-      <!-- Inventory -->
-      <a class="flex items-center gap-3 text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors transition-transform scale-95 active:scale-100" href="#">
-        <span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
-        <span>Inventory</span>
-      </a>
-      <!-- Transactions -->
-      <a class="flex items-center gap-3 text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors transition-transform scale-95 active:scale-100" href="#">
-        <span class="material-symbols-outlined" data-icon="swap_horiz">swap_horiz</span>
-        <span>Transactions</span>
-      </a>
-      <!-- Master Data (ACTIVE STATE) -->
-      <a class="flex items-center gap-3 bg-[#005FB8] text-white rounded-lg shadow-sm mx-2 my-1 px-4 py-3 transition-transform scale-95 active:scale-100" href="#">
-        <span class="material-symbols-outlined" data-icon="database" style="font-variation-settings: 'FILL' 1;">database</span>
-        <span>Master Data</span>
-      </a>
-    </nav>
-  </div>
-  <div class="mt-auto pb-6">
-    <nav class="space-y-1">
-      <a class="flex items-center gap-3 text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors transition-transform scale-95 active:scale-100" href="#">
-        <span class="material-symbols-outlined" data-icon="settings">settings</span>
-        <span>Settings</span>
-      </a>
-      <a class="flex items-center gap-3 text-[#424752] dark:text-[#cfdce4] hover:bg-[#e3f0f8] dark:hover:bg-[#424752] rounded-lg mx-2 my-1 px-4 py-3 transition-colors transition-transform scale-95 active:scale-100" href="#">
-        <span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
-        <span>Support</span>
-      </a>
-    </nav>
-  </div>
-</aside>
-<!-- Main Content Canvas -->
-<main id="site-main" class="flex-1 ml-64 min-h-screen flex flex-col bg-surface">
-  <!-- TopNavBar (Authority: JSON) -->
-  <header class="docked full-width top-0 z-40 bg-[#f4faff] dark:bg-[#111d23] flex justify-between items-center w-full px-6 py-3 font-['Manrope'] font-bold tracking-tight text-sm">
-    <div class="flex items-center gap-4">
-      <span class="text-lg font-black text-[#111d23] dark:text-[#f4faff]">Branch WMS</span>
-      <span class="h-4 w-px bg-outline-variant/30"></span>
-      <span class="text-on-surface-variant font-medium">Master Data View</span>
-    </div>
-    <div class="flex items-center gap-6">
-      <div class="text-[#424752] dark:text-[#cfdce4] font-normal italic">
-        Last Synced: 2 mins ago
-      </div>
-      <div class="flex items-center gap-3 text-[#005FB8]">
-        <button class="hover:bg-[#e3f0f8] dark:hover:bg-[#424752] p-2 rounded-full transition-all duration-200">
-          <span class="material-symbols-outlined" data-icon="sync">sync</span>
-        </button>
-        <button class="hover:bg-[#e3f0f8] dark:hover:bg-[#424752] p-2 rounded-full transition-all duration-200">
-          <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
-        </button>
-      </div>
-      <div class="flex items-center gap-2">
-        <img alt="Station Manager Profile" class="w-8 h-8 rounded-full border-2 border-primary/20" data-alt="professional portrait of a middle-aged warehouse operations manager in a high-vis vest in a bright industrial setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZJCu4iq7xRQ_5156UCq7LoX5cAKsfe0HvedadAvZa4bemS_Q3y_vS0ENDhqBNmdJHMFdCsRyJ61_E3nRM5cKSN9ByWX90nQRHEX68gHGTCfE5f3cFTtW8Nk7BTUv4h_vtSFP9NKztwzVun8I7u2dueYBaK0yQxTKhamaX36Mpz7zPenEnsQUchVvmRJ1IKTqfrBVp5_6wTE3Ap-k9Q4ZU--G3HuhlYKyb7VgOPnQlXTkAKzTxVCiF_ECcUrytXJwRsdH5dHIvaPQ"/>
-      </div>
-      <!-- Logout in header -->
-      <form method="post" th:action="@{/logout}" class="ml-4">
-        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
-        <button type="submit" class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-md">
-          <span class="material-symbols-outlined">logout</span>
-        </button>
-      </form>
-      </div>
-    </div>
-  </header>
-  <!-- Read-Only Banner -->
-  <div class="mx-6 mt-6">
-    <div class="bg-tertiary-container/10 border-l-4 border-tertiary-container px-6 py-4 flex items-center justify-between rounded-r-xl">
-      <div class="flex items-center gap-4">
-        <span class="material-symbols-outlined text-tertiary-container" data-icon="lock" style="font-variation-settings: 'FILL' 1;">lock</span>
-        <div>
-          <p class="font-bold text-on-surface">Centralized Governance Active</p>
-          <p class="text-sm text-on-surface-variant" th:text="${'Master Data managed by Central Hub. Access is read-only for ' + currentStation.name + '.'}">Master Data managed by Central Hub. Access is read-only for Branch Alpha.</p>
-        </div>
-      </div>
-      <div class="flex gap-2">
-        <!-- Disabled CTA - Grayed out -->
-        <button class="flex items-center gap-2 px-4 py-2 bg-outline-variant/20 text-outline cursor-not-allowed rounded-lg font-bold text-sm" disabled="">
-          <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
-          NEW PRODUCT
-        </button>
-        <button class="flex items-center gap-2 px-4 py-2 bg-outline-variant/20 text-outline cursor-not-allowed rounded-lg font-bold text-sm" disabled="">
-          <span class="material-symbols-outlined text-sm" data-icon="upload_file">upload_file</span>
-          BULK IMPORT
-        </button>
-      </div>
-    </div>
-  </div>
-  <!-- Content Area: The Architectural Ledger -->
-  <div class="p-6 grid grid-cols-12 gap-6">
-    <!-- Category Sidebar/Filter (Read-Only) -->
-    <div class="col-span-3 space-y-4">
-      <div class="bg-surface-container rounded-xl p-5">
-        <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">Product Categories</h3>
-        <div class="space-y-1">
-          <div class="flex items-center justify-between p-2 bg-surface-container-highest text-primary rounded-lg font-semibold">
-            <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm" data-icon="category">category</span> Electronics</span>
-            <span class="text-xs bg-primary/10 px-2 py-0.5 rounded">1,240</span>
-          </div>
-          <div class="flex items-center justify-between p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg cursor-not-allowed">
-            <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm" data-icon="precision_manufacturing">precision_manufacturing</span> Spare Parts</span>
-            <span class="text-xs">842</span>
-          </div>
-          <div class="flex items-center justify-between p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg cursor-not-allowed">
-            <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm" data-icon="package_2">package_2</span> Packaging</span>
-            <span class="text-xs">315</span>
-          </div>
-        </div>
-        <div class="mt-6 pt-4 border-t border-outline-variant/20">
-          <div class="flex items-center justify-between text-on-surface-variant opacity-50 cursor-not-allowed">
-            <span class="text-xs font-bold">MANAGE TAXONOMY</span>
-            <span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
-          </div>
-        </div>
-      </div>
-      <!-- Warehouse Stats Card -->
-      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/10">
-        <p class="text-xs text-on-surface-variant font-bold uppercase mb-2">Global Health</p>
-        <div class="flex items-end justify-between">
-          <span class="text-3xl font-headline font-extrabold text-primary">99.8%</span>
-          <span class="text-xs text-secondary mb-1">Catalog Integrity</span>
-        </div>
-        <div class="mt-4 w-full bg-surface-container h-1 rounded-full overflow-hidden">
-          <div class="bg-primary h-full w-[99.8%]"></div>
-        </div>
-      </div>
-    </div>
-    <!-- Master Data Table Area -->
-    <div class="col-span-9">
-      <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden relative border border-outline-variant/10">
-        <!-- Restricted Access Overlay (Subtle) -->
-        <div class="absolute inset-0 z-10 glass-overlay flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-          <div class="bg-surface-container-lowest shadow-xl px-6 py-3 rounded-full border border-primary/20 flex items-center gap-3">
-            <span class="material-symbols-outlined text-primary" data-icon="info">info</span>
-            <span class="font-bold text-sm text-on-surface">Data modifications restricted to Central Admin</span>
-          </div>
-        </div>
-        <div class="p-6 flex justify-between items-center bg-surface-container-low/50">
-          <div class="relative w-72">
-            <label class="sr-only" for="masterdata-search">Search product ID or name</label>
-            <input class="w-full pl-10 pr-4 py-2 bg-surface-container border-b-2 border-primary focus:outline-none text-sm rounded-t-lg transition-all" id="masterdata-search" placeholder="Search product ID, name..." type="text"/>
-            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-sm" data-icon="search">search</span>
-          </div>
-          <div class="flex gap-4">
-            <div class="flex items-center gap-2 text-xs font-bold text-on-surface-variant">
-              <span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
-              ACTIVE FILTERS: <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded">All SKU</span>
-            </div>
-          </div>
+<body class="bg-[#f4faff] text-[#111d23]">
+<div th:replace="sidebar :: sidebar"></div>
+<main id="site-main" class="ml-64 min-h-screen p-8">
+    <header class="mb-8">
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#005FB8]">Master Data</p>
+        <h1 class="mt-2 text-3xl font-headline font-extrabold">Catalog overview</h1>
+        <p class="mt-2 text-sm text-slate-600">Giữ lại trang này cho chức năng sau, hiện chỉ hiển thị dữ liệu nền tảng theo dạng gọn.</p>
+    </header>
+
+    <section class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div class="border-b border-slate-200 px-6 py-4">
+            <h2 class="text-lg font-headline font-bold">Danh mục nền</h2>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
-            <thead>
-            <tr class="bg-surface-container-low">
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">SKU / PRODUCT ID</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">PRODUCT DESCRIPTION</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">UOM</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">WEIGHT (KG)</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-right">GLOBAL STATUS</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-center">ACTIONS</th>
-            </tr>
-            </thead>
-            <tbody class="divide-y divide-outline-variant/10">
-            <tr class="bg-surface hover:bg-surface-container-high transition-colors">
-              <td class="px-6 py-5">
-                <span class="font-bold text-primary font-body tracking-tight">ELC-2024-X9</span>
-              </td>
-              <td class="px-6 py-5">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded bg-surface-container-highest flex items-center justify-center">
-                    <span class="material-symbols-outlined text-on-surface-variant" data-icon="laptop_chromebook">laptop_chromebook</span>
-                  </div>
-                  <div>
-                    <p class="font-bold text-on-surface">Pro-Logic Motherboard X9</p>
-                    <p class="text-xs text-on-surface-variant">Industrial Grade Semiconductor</p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-5 font-medium text-on-surface-variant">EA</td>
-              <td class="px-6 py-5 font-medium text-on-surface-variant">0.45</td>
-              <td class="px-6 py-5 text-right">
-                <span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-1 rounded-full uppercase">Active</span>
-              </td>
-              <td class="px-6 py-5 text-center">
-                <button class="p-1.5 text-outline-variant cursor-not-allowed hover:bg-surface-variant rounded" disabled="">
-                  <span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
-                </button>
-                <button class="p-1.5 text-outline-variant cursor-not-allowed hover:bg-surface-variant rounded" disabled="">
-                  <span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
-                </button>
-              </td>
-            </tr>
-            <tr class="bg-surface-container-lowest hover:bg-surface-container-high transition-colors">
-              <td class="px-6 py-5">
-                <span class="font-bold text-primary font-body tracking-tight">MEC-HD-700</span>
-              </td>
-              <td class="px-6 py-5">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded bg-surface-container-highest flex items-center justify-center">
-                    <span class="material-symbols-outlined text-on-surface-variant" data-icon="settings_input_component">settings_input_component</span>
-                  </div>
-                  <div>
-                    <p class="font-bold text-on-surface">Hydraulic Seal 700 Series</p>
-                    <p class="text-xs text-on-surface-variant">High-Pressure Fluid Control</p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-5 font-medium text-on-surface-variant">SET</td>
-              <td class="px-6 py-5 font-medium text-on-surface-variant">1.20</td>
-              <td class="px-6 py-5 text-right">
-                <span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-1 rounded-full uppercase">Active</span>
-              </td>
-              <td class="px-6 py-5 text-center">
-                <button class="p-1.5 text-outline-variant cursor-not-allowed hover:bg-surface-variant rounded" disabled="">
-                  <span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
-                </button>
-                <button class="p-1.5 text-outline-variant cursor-not-allowed hover:bg-surface-variant rounded" disabled="">
-                  <span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
-                </button>
-              </td>
-            </tr>
-            <tr class="bg-surface hover:bg-surface-container-high transition-colors">
-              <td class="px-6 py-5">
-                <span class="font-bold text-primary font-body tracking-tight">PKG-CRL-90</span>
-              </td>
-              <td class="px-6 py-5">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded bg-surface-container-highest flex items-center justify-center">
-                    <span class="material-symbols-outlined text-on-surface-variant" data-icon="texture">texture</span>
-                  </div>
-                  <div>
-                    <p class="font-bold text-on-surface">Reinforced Poly-Wrap</p>
-                    <p class="text-xs text-on-surface-variant">Corrosion Resistant Layer</p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-5 font-medium text-on-surface-variant">ROLL</td>
-              <td class="px-6 py-5 font-medium text-on-surface-variant">15.00</td>
-              <td class="px-6 py-5 text-right">
-                <span class="bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold px-2 py-1 rounded-full uppercase">Review</span>
-              </td>
-              <td class="px-6 py-5 text-center">
-                <button class="p-1.5 text-outline-variant cursor-not-allowed hover:bg-surface-variant rounded" disabled="">
-                  <span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
-                </button>
-                <button class="p-1.5 text-outline-variant cursor-not-allowed hover:bg-surface-variant rounded" disabled="">
-                  <span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
-                </button>
-              </td>
-            </tr>
-            </tbody>
-          </table>
+            <table class="min-w-full text-left text-sm">
+                <thead class="bg-slate-50 text-slate-600">
+                <tr>
+                    <th class="px-6 py-4">Mã</th>
+                    <th class="px-6 py-4">Tên</th>
+                    <th class="px-6 py-4">Nhóm</th>
+                    <th class="px-6 py-4">Trạng thái</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                <tr>
+                    <td class="px-6 py-4 font-semibold text-[#005FB8]">ELC-2024-X9</td>
+                    <td class="px-6 py-4">Pro-Logic Motherboard X9</td>
+                    <td class="px-6 py-4">Electronics</td>
+                    <td class="px-6 py-4"><span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">Active</span></td>
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 font-semibold text-[#005FB8]">MEC-HD-700</td>
+                    <td class="px-6 py-4">Hydraulic Seal 700 Series</td>
+                    <td class="px-6 py-4">Spare Parts</td>
+                    <td class="px-6 py-4"><span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">Active</span></td>
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 font-semibold text-[#005FB8]">PKG-CRL-90</td>
+                    <td class="px-6 py-4">Reinforced Poly-Wrap</td>
+                    <td class="px-6 py-4">Packaging</td>
+                    <td class="px-6 py-4"><span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">Review</span></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
-      </div>
-      <!-- Footer Pagination & Read-Only Disclaimer -->
-      <div class="mt-4 flex items-center justify-between px-2">
-        <p class="text-xs text-on-surface-variant/60 italic flex items-center gap-2">
-          <span class="material-symbols-outlined text-xs" data-icon="verified_user">verified_user</span>
-          Snapshot as of Today, 09:12 AM (UTC+0)
-        </p>
-        <div class="flex items-center gap-1">
-          <button class="w-8 h-8 flex items-center justify-center text-outline cursor-not-allowed rounded" disabled="">
-            <span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
-          </button>
-          <span class="bg-primary text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded">1</span>
-          <span class="text-on-surface-variant text-xs px-2">of 42</span>
-          <button class="w-8 h-8 flex items-center justify-center text-outline cursor-not-allowed rounded" disabled="">
-            <span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Sync Indicator (Fixed Bottom Right) -->
-  <div class="fixed bottom-6 right-6 z-30">
-    <div class="glass-overlay border border-outline-variant/30 rounded-full px-4 py-2 flex items-center gap-3 shadow-lg">
-      <div class="w-2 h-2 rounded-full bg-[#004692] animate-pulse"></div>
-      <span class="text-[10px] font-bold tracking-widest text-primary uppercase">Catalog Synced with Hub</span>
-      <span class="material-symbols-outlined text-sm text-primary" data-icon="cloud_done">cloud_done</span>
-    </div>
-  </div>
+    </section>
 </main>
-</body></html>
+</body>
+</html>

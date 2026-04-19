@@ -46,13 +46,12 @@ public class InventoryController {
         return "inventory";
     }
 
-
     @PostMapping("/inventory/adjust-ajax")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> adjustStockAjax(@AuthenticationPrincipal AppUserPrincipal principal,
-                                                                @RequestParam String productId,
-                                                                @RequestParam int quantity,
-                                                                @RequestParam String operation) {
+                                                               @RequestParam String productId,
+                                                               @RequestParam int quantity,
+                                                               @RequestParam String operation) {
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -67,7 +66,6 @@ public class InventoryController {
             response.put("totalUnits", inventoryService.getTotalQuantity(currentStation.getId()));
             response.put("lowStockCount", inventoryService.getLowStockCount(currentStation.getId(), LOW_STOCK_THRESHOLD));
             response.put("lowStockThreshold", LOW_STOCK_THRESHOLD);
-
             return ResponseEntity.ok(response);
         } catch (RuntimeException ex) {
             response.put("success", false);

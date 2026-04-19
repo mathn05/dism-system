@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="sidebar">
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-[#cfdce4] flex flex-col border-r border-[#c2c6d4]/15">
+  <div class="p-6">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-[#004692] flex items-center justify-center rounded-lg shadow-inner">
+        <span class="material-symbols-outlined text-white">warehouse</span>
+      </div>
+      <div>
+        <h2 class="font-extrabold text-[#004692] text-xl tracking-tight" th:text="${currentStation.name}">Station Alpha</h2>
+        <p class="text-on-surface-variant text-xs font-medium mt-1" th:text="${currentStation.id}">STATION-ALPHA-7</p>
+      </div>
+    </div>
+  </div>
+  <nav class="flex-1 mt-4">
+    <a class="sidebar-link flex items-center text-[#424752] hover:bg-[#e3f0f8] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" th:href="@{/dashboard}" data-href="/dashboard">
+      <span class="material-symbols-outlined mr-3">dashboard</span>
+      <span class="font-medium text-sm antialiased">Dashboard</span>
+    </a>
+    <a class="sidebar-link flex items-center text-[#424752] hover:bg-[#e3f0f8] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" th:href="@{/inventory}" data-href="/inventory">
+      <span class="material-symbols-outlined mr-3">inventory_2</span>
+      <span class="font-medium text-sm antialiased">Inventory</span>
+    </a>
+    <a class="sidebar-link flex items-center text-[#424752] hover:bg-[#e3f0f8] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" th:href="@{/order}" data-href="/order">
+      <span class="material-symbols-outlined mr-3">assignment</span>
+      <span class="font-medium text-sm antialiased">Order</span>
+    </a>
+    <a class="sidebar-link flex items-center text-[#424752] hover:bg-[#e3f0f8] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" th:href="@{/receive}" data-href="/receive">
+      <span class="material-symbols-outlined mr-3">local_shipping</span>
+      <span class="font-medium text-sm antialiased">Receive</span>
+    </a>
+    <a class="sidebar-link flex items-center text-[#424752] hover:bg-[#e3f0f8] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" th:href="@{/possale}" data-href="/possale">
+      <span class="material-symbols-outlined mr-3">shopping_cart</span>
+      <span class="font-medium text-sm antialiased">POS Sale</span>
+    </a>
+    <a class="sidebar-link flex items-center text-[#424752] hover:bg-[#e3f0f8] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" th:href="@{/customer}" data-href="/customer">
+      <span class="material-symbols-outlined mr-3">groups</span>
+      <span class="font-medium text-sm antialiased">Customer</span>
+    </a>
+    <a class="sidebar-link flex items-center text-[#424752] hover:bg-[#e3f0f8] rounded-lg mx-2 my-1 px-4 py-3 transition-colors group" th:href="@{/masterdata}" data-href="/masterdata">
+      <span class="material-symbols-outlined mr-3">database</span>
+      <span class="font-medium text-sm antialiased">Master Data</span>
+    </a>
+  </nav>
+  <div class="mt-auto p-2 border-t border-[#c2c6d4]/15">
+    <form method="post" th:action="@{/logout}">
+      <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+      <button class="w-full flex items-center gap-3 text-[#424752] px-4 py-3 rounded-lg hover:bg-[#e3f0f8] transition-all font-body text-sm font-medium tracking-wide" type="submit">
+        <span class="material-symbols-outlined">logout</span>
+        <span>Logout</span>
+      </button>
+    </form>
+  </div>
+</aside>
+</div>
+</html>

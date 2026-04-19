@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html class="light" lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Branch WMS - Order Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_parameter" th:content="${_csrf.parameterName}"/>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#f4faff] text-[#111d23]">
+<div th:replace="sidebar :: sidebar"></div>
+<main id="site-main" class="ml-64 min-h-screen flex flex-col">
+    <header class="bg-[#f4faff] flex justify-between items-center w-full px-6 py-3 border-b border-slate-200">
+        <div class="flex items-center gap-4">
+            <h1 class="text-lg font-black font-headline">Order Management</h1>
+            <div class="h-4 w-px bg-slate-300/60"></div>
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#005FB8] text-sm">assignment</span>
+                <span class="text-xs font-bold text-slate-600 tracking-wide" th:text="${currentStation.name + ' - ' + currentStation.id}">Station</span>
+            </div>
+        </div>
+        <div class="text-xs font-headline font-bold text-slate-500">Current station orders only</div>
+    </header>
+
+    <div class="p-8 space-y-8">
+        <div id="order-async-message" class="hidden"></div>
+        <div th:if="${successMessage}" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800" th:text="${errorMessage}"></div>
+
+        <section class="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-200">
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <h2 class="text-3xl font-headline font-extrabold tracking-tight">Create order</h2>
+                        <span class="bg-slate-100 text-slate-600 text-[0.6875rem] font-bold px-2 py-1 rounded-full tracking-wider uppercase">SALE / TRANSFER</span>
+                    </div>
+                    <p class="mt-2 text-sm text-slate-500">Form tu dong thay doi theo loai order, `TRANSFER` chi nhan hang tu kho trung tam.</p>
+                </div>
+
+                <form th:action="@{/order/create}" method="post" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+
+                    <div class="space-y-1.5 md:col-span-2">
+                        <label class="text-[11px] font-bold tracking-wider text-slate-500 uppercase" for="order-type">Order type</label>
+                        <select id="order-type" name="type" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#004692] focus:ring-[#004692]" required>
+                            <option value="SALE">SALE</option>
+                            <option value="TRANSFER">TRANSFER</option>
+                        </select>
+                    </div>
+
+                    <div id="customer-wrap" class="hidden space-y-1.5 md:col-span-2">
+                        <label class="text-[11px] font-bold tracking-wider text-slate-500 uppercase" for="customer-field">Customer</label>
+                        <select id="customer-field" name="customerId" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#004692] focus:ring-[#004692]">
+                            <option value="">Select customer</option>
+                            <option th:each="c : ${customers}" th:value="${c.id}" th:text="${c.name + ' - ' + c.phoneNumber}"></option>
+                        </select>
+                    </div>
+
+                    <div id="from-wrap" class="hidden space-y-1.5 md:col-span-2">
+                        <label class="text-[11px] font-bold tracking-wider text-slate-500 uppercase" for="from-field">Central warehouse</label>
+                        <select id="from-field" name="fromStationId" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#004692] focus:ring-[#004692]">
+                            <option value="">Select central warehouse</option>
+                            <option th:each="s : ${headquarterStations}" th:value="${s.id}" th:text="${s.name + ' · ' + s.id}"></option>
+                        </select>
+                        <p class="text-xs text-slate-500">Transfer chi nhan hang tu kho trung tam vao chi nhanh hien tai.</p>
+                    </div>
+
+                    <div class="md:col-span-2 flex justify-end">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-[#004692] px-6 py-3 text-sm font-bold text-white shadow-sm hover:opacity-90 transition-opacity">
+                            <span class="material-symbols-outlined text-sm">add_task</span>
+                            Create Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-[#275fae] rounded-xl border border-[#275fae] p-6 text-white">
+                    <div class="text-[0.6875rem] font-bold uppercase tracking-widest opacity-80">Current station</div>
+                    <div class="mt-3 text-2xl font-headline font-black tracking-tight" th:text="${currentStation.name}">Station</div>
+                    <div class="mt-2 text-sm opacity-90" th:text="${currentStation.id}">ST01</div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                        <div class="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-500">Sale</div>
+                        <div class="mt-3 text-2xl font-headline font-black text-emerald-600" th:text="${saleOrders.size()}">0</div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                        <div class="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-500">Transfer</div>
+                        <div class="mt-3 text-2xl font-headline font-black text-amber-600" th:text="${transferOrders.size()}">0</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 gap-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-headline font-bold text-slate-900">Sale orders</h3>
+                        <p class="text-sm text-slate-500">Chi hien thi don `SALE` cua chi nhanh hien tai.</p>
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full" th:text="${saleOrders.size() + ' orders'}">0 orders</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[860px] text-left border-collapse">
+                        <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Order</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Created At</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">User</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Customer</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider text-right">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                        <tr th:if="${#lists.isEmpty(saleOrders)}">
+                            <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-500">No sale orders found.</td>
+                        </tr>
+                        <tr th:each="order : ${saleOrders}" class="hover:bg-slate-50 transition-colors">
+                            <td class="px-4 py-4 font-headline text-sm font-bold text-[#004692] truncate" th:text="${order.id}">ID</td>
+                            <td class="px-4 py-4 text-sm text-slate-900" th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">19/04/2026 10:00</td>
+                            <td class="px-4 py-4 text-sm text-slate-900" th:text="${order.user != null ? order.user.username : '-'}">user</td>
+                            <td class="px-4 py-4 text-sm text-slate-600" th:text="${order.customer != null ? order.customer.name : '-'}">customer</td>
+                            <td class="px-4 py-4 text-right">
+                                <a th:href="@{'/order/' + ${order.id}}" class="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                                    <span class="material-symbols-outlined text-sm">visibility</span>
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-headline font-bold text-slate-900">Transfer orders</h3>
+                        <p class="text-sm text-slate-500">Chi hien thi don nhan hang tu kho trung tam vao chi nhanh hien tai.</p>
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full" th:text="${transferOrders.size() + ' orders'}">0 orders</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[860px] text-left border-collapse">
+                        <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Order</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Created At</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">User</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Central Warehouse</th>
+                            <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider text-right">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                        <tr th:if="${#lists.isEmpty(transferOrders)}">
+                            <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-500">No transfer orders found.</td>
+                        </tr>
+                        <tr th:each="order : ${transferOrders}" class="hover:bg-slate-50 transition-colors">
+                            <td class="px-4 py-4 font-headline text-sm font-bold text-[#004692] truncate" th:text="${order.id}">ID</td>
+                            <td class="px-4 py-4 text-sm text-slate-900" th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">19/04/2026 10:00</td>
+                            <td class="px-4 py-4 text-sm text-slate-900" th:text="${order.user != null ? order.user.username : '-'}">user</td>
+                            <td class="px-4 py-4 text-sm text-slate-600" th:text="${order.fromStation != null ? order.fromStation.name : '-'}">warehouse</td>
+                            <td class="px-4 py-4 text-right">
+                                <a th:href="@{'/order/' + ${order.id}}" class="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                                    <span class="material-symbols-outlined text-sm">visibility</span>
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script>
+    (function () {
+        const typeEl = document.getElementById('order-type');
+        const customerWrap = document.getElementById('customer-wrap');
+        const fromWrap = document.getElementById('from-wrap');
+        const customerField = document.getElementById('customer-field');
+        const fromField = document.getElementById('from-field');
+
+        function updateFields() {
+            const value = typeEl.value;
+            const isSale = value === 'SALE';
+            const isTransfer = value === 'TRANSFER';
+            customerWrap.classList.toggle('hidden', !isSale);
+            fromWrap.classList.toggle('hidden', !isTransfer);
+            customerField.toggleAttribute('required', isSale);
+            fromField.toggleAttribute('required', isTransfer);
+            if (!isSale) {
+                customerField.value = '';
+            }
+            if (!isTransfer) {
+                fromField.value = '';
+            }
+        }
+
+        if (typeEl) {
+            typeEl.addEventListener('change', updateFields);
+            updateFields();
+        }
+    })();
+</script>
+<script defer th:src="@{/js/order.js}"></script>
+</body>
+</html>
