@@ -38,7 +38,7 @@
                     <h2 class="text-3xl font-headline font-extrabold tracking-tight">Chi nhanh hien tai</h2>
                     <p class="mt-2 text-sm text-slate-500">Thong ke nhanh de quan ly ton kho va giao dich tai chi nhanh.</p>
                 </div>
-                <div class="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
                         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Tracked products</div>
                         <div class="mt-3 text-3xl font-headline font-black text-[#004692]" th:text="${trackedProducts}">0</div>
@@ -54,21 +54,6 @@
                         <div class="mt-3 text-3xl font-headline font-black text-red-600" th:text="${lowStockCount}">0</div>
                         <div class="mt-1 text-sm text-slate-500">San pham sap can bo sung</div>
                     </div>
-                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-                        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total orders</div>
-                        <div class="mt-3 text-3xl font-headline font-black text-slate-900" th:text="${totalOrders}">0</div>
-                        <div class="mt-1 text-sm text-slate-500">Order cua chi nhanh hien tai</div>
-                    </div>
-                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-                        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Sale orders</div>
-                        <div class="mt-3 text-3xl font-headline font-black text-emerald-600" th:text="${saleOrders}">0</div>
-                        <div class="mt-1 text-sm text-slate-500">Don ban hang tai quay</div>
-                    </div>
-                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-                        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Transfer orders</div>
-                        <div class="mt-3 text-3xl font-headline font-black text-amber-600" th:text="${transferOrders}">0</div>
-                        <div class="mt-1 text-sm text-slate-500">Don nhan hang tu kho trung tam</div>
-                    </div>
                 </div>
             </div>
 
@@ -83,7 +68,7 @@
                     </div>
                     <div class="rounded-xl bg-white/20 px-4 py-3">
                         <div class="text-[11px] font-bold uppercase tracking-wider opacity-80">Main focus</div>
-                        <div class="mt-1 text-sm font-semibold">Inventory and branch orders</div>
+                        <div class="mt-1 text-sm font-semibold">Inventory and station data</div>
                     </div>
                 </div>
             </div>
@@ -99,18 +84,18 @@
                     </div>
                     <div class="flex gap-3">
                         <div class="h-8 w-8 rounded-full bg-[#004692] text-white flex items-center justify-center font-bold">2</div>
-                        <div>Theo doi cac transfer dang nhan tu kho trung tam va cap nhat ton kho.</div>
+                        <div>Doi chieu ton kho theo station hien tai.</div>
                     </div>
                     <div class="flex gap-3">
                         <div class="h-8 w-8 rounded-full bg-[#004692] text-white flex items-center justify-center font-bold">3</div>
-                        <div>Xem so luong sale order de doi chieu giao dich trong ngay.</div>
+                        <div>Chuan bi cho luong import va sale moi.</div>
                     </div>
                 </div>
             </div>
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <h3 class="text-lg font-headline font-bold text-slate-900">Chi nhanh scope</h3>
                 <p class="mt-3 text-sm leading-6 text-slate-600">
-                    Dashboard nay chi hien thi du lieu cua chi nhanh dang dang nhap. Cac order va ton kho deu duoc gioi han theo station hien tai de tranh nham lan khi van hanh.
+                    Dashboard nay chi hien thi du lieu cua chi nhanh dang dang nhap. Ton kho duoc gioi han theo station hien tai de tranh nham lan khi van hanh.
                 </p>
             </div>
         </section>

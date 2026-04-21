@@ -16,12 +16,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class OrderDetailId implements Serializable {
+public class ImportDetailId implements Serializable {
 
-    @Column(name = "order_id", length = 255)
-    private String orderId;
+    @Column(name = "import_id", length = 50)
+    private String importId;
 
-    @Column(name = "product_id", length = 255)
+    @Column(name = "product_id", length = 50)
     private String productId;
 }
-

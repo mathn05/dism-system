@@ -18,10 +18,10 @@ import lombok.Setter;
 public class Category {
 
     @Id
-    @Column(length = 255)
+    @Column(length = 50)
     private String id;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String name;
 
     @Column(length = 255)

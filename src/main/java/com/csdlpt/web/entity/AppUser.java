@@ -23,27 +23,27 @@ import lombok.Setter;
 public class AppUser {
 
     @Id
-    @Column(length = 255)
+    @Column(length = 50)
     private String id;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(unique = true, length = 50)
     private String username;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 50)
     private String password;
 
     @Column(length = 255)
     private String fullname;
 
-    @Column(name = "phonenumber", nullable = false, unique = true, length = 15)
+    @Column(name = "phonenumber", unique = true, length = 15)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @Column(length = 20)
     private UserRole role;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "station_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "station_id")
     private Station station;
 }
 

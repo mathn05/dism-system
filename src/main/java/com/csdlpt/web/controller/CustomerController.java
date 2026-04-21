@@ -5,7 +5,6 @@ import com.csdlpt.web.entity.Station;
 import com.csdlpt.web.repository.StationRepository;
 import com.csdlpt.web.security.AppUserPrincipal;
 import com.csdlpt.web.service.CustomerService;
-import com.csdlpt.web.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -25,14 +24,11 @@ public class CustomerController {
 
     private final CustomerService customerService;
     private final StationRepository stationRepository;
-    private final OrderService orderService;
 
     public CustomerController(CustomerService customerService,
-                              StationRepository stationRepository,
-                              OrderService orderService) {
+                              StationRepository stationRepository) {
         this.customerService = customerService;
         this.stationRepository = stationRepository;
-        this.orderService = orderService;
     }
 
     @GetMapping
@@ -41,7 +37,6 @@ public class CustomerController {
         model.addAttribute("currentStation", currentStation);
         model.addAttribute("customers", customerService.findAll());
         model.addAttribute("customerCount", customerService.countAll());
-        model.addAttribute("topCustomer", orderService.findTopCustomerByStation(currentStation.getId()));
         return "customer";
     }
 

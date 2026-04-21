@@ -18,16 +18,20 @@ import lombok.Setter;
 public class Station {
 
     @Id
-    @Column(length = 255)
+    @Column(length = 50)
     private String id;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String name;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String address;
 
-    @Column(name = "is_headquarter", nullable = false)
-    private boolean headquarter;
+    @Column(name = "is_headquarter")
+    private Boolean headquarter;
+
+    public boolean isHeadquarter() {
+        return Boolean.TRUE.equals(headquarter);
+    }
 }
 

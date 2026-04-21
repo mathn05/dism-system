@@ -16,30 +16,29 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "OrderDetail")
+@Table(name = "ImportDetail")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDetail {
+public class ImportDetail {
 
     @EmbeddedId
-    private OrderDetailId id;
+    private ImportDetailId id;
 
-    @MapsId("orderId")
+    @MapsId("importId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "order_id", nullable = false)
-    private OrderEntity order;
+    @JoinColumn(name = "import_id", nullable = false)
+    private ImportEntity importEntity;
 
     @MapsId("productId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(nullable = false)
-    private int quantity;
+    @Column
+    private Integer quantity;
 
-    @Column(nullable = false, precision = 15, scale = 2)
-    private BigDecimal price;
+    @Column(name = "import_price", precision = 15, scale = 2)
+    private BigDecimal importPrice;
 }
-

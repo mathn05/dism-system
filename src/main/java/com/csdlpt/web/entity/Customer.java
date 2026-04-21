@@ -18,16 +18,16 @@ import lombok.Setter;
 public class Customer {
 
     @Id
-    @Column(length = 255)
+    @Column(length = 50)
     private String id;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String name;
 
-    @Column(name = "phonenumber", nullable = false, unique = true, length = 15)
+    @Column(name = "phonenumber", unique = true, length = 15)
     private String phoneNumber;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String address;
 }
 
