@@ -2,6 +2,7 @@ package com.csdlpt.web.service;
 
 import com.csdlpt.web.entity.Customer;
 import com.csdlpt.web.repository.CustomerRepository;
+import com.csdlpt.web.repository.SaleRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,10 +13,15 @@ import java.util.List;
 @Transactional
 public class CustomerService {
 
-    private final CustomerRepository customerRepository;
+    public record TopCustomerSummary(String customerName, long orderCount) {}
 
-    public CustomerService(CustomerRepository customerRepository) {
+    private final CustomerRepository customerRepository;
+    private final SaleRepository saleRepository;
+
+    public CustomerService(CustomerRepository customerRepository,
+                           SaleRepository saleRepository) {
         this.customerRepository = customerRepository;
+        this.saleRepository = saleRepository;
     }
 
     @Transactional(readOnly = true)
@@ -26,6 +32,14 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public long countAll() {
         return customerRepository.count();
+    }
+
+    @Transactional(readOnly = true)
+    public TopCustomerSummary findTopCustomerByStationId(String stationId) {
+        return saleRepository.findTopCustomersByStationId(stationId).stream()
+            .findFirst()
+            .map(result -> new TopCustomerSummary(String.valueOf(result[0]), ((Number) result[1]).longValue()))
+            .orElse(null);
     }
 
     public Customer create(String customerId, String name, String phoneNumber, String address) {

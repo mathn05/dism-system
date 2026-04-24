@@ -34,7 +34,7 @@
       <div class="h-4 w-px bg-slate-300/60"></div>
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-[#005FB8] text-sm">location_on</span>
-        <span class="text-xs font-bold text-slate-600 tracking-wide" th:text="${currentStation.name + ' · ' + currentStation.id}">STATION</span>
+        <span class="text-xs font-bold text-slate-600 tracking-wide" th:text="${currentStation.name + ' - ' + currentStation.id}">STATION</span>
       </div>
     </div>
     <div class="flex items-center gap-3 text-xs font-headline font-bold text-slate-500">
@@ -57,7 +57,7 @@
         <span class="text-[0.6875rem] font-bold text-slate-500 uppercase tracking-widest">Low stock</span>
         <div class="mt-4 flex items-baseline gap-2">
           <span id="low-stock-count-value" class="text-4xl font-headline font-black text-red-600" th:text="${lowStockCount}">0</span>
-          <span id="low-stock-threshold-label" class="text-xs font-bold text-slate-500" th:text="${'≤ ' + lowStockThreshold + ' units'}">≤ 20 units</span>
+          <span id="low-stock-threshold-label" class="text-xs font-bold text-slate-500" th:text="${'<= ' + lowStockThreshold + ' units'}"><= 20 units</span>
         </div>
       </div>
       <div class="bg-[#275fae] p-6 rounded-xl shadow-sm border border-[#275fae] text-white">
@@ -121,13 +121,13 @@
               <td class="px-6 py-10 text-center text-sm text-slate-500" colspan="5">No inventory has been recorded for this station yet.</td>
             </tr>
             <tr class="hover:bg-slate-50 transition-colors group inventory-row" th:each="item, itemStat : ${inventoryItems}"
-                th:attr="data-product-id=${item.product.id},data-current-quantity=${item.quantity},data-stock-quantity=${item.quantity},data-default-order=${itemStat.index},data-search=${#strings.toLowerCase(item.product.id + ' ' + item.product.name + ' ' + item.product.category.name)}">
+                th:attr="data-product-id=${item.product.id},data-current-quantity=${item.quantity},data-stock-quantity=${item.quantity},data-default-order=${itemStat.index},data-search=${#strings.toLowerCase(item.product.id + ' ' + item.product.name + ' ' + (item.product.category != null ? item.product.category.name : ''))}">
               <td class="px-4 py-4 font-headline text-sm font-bold text-[#004692] whitespace-nowrap" th:text="${item.product.id}">SKU</td>
               <td class="px-4 py-4">
                 <span class="text-sm font-semibold text-slate-900 block break-words" th:text="${item.product.name}">Product name</span>
               </td>
               <td class="px-4 py-4">
-                <span class="inline-block max-w-full truncate text-xs bg-slate-100 px-2.5 py-1 rounded-full text-slate-600 font-medium" th:text="${item.product.category.name}">Category</span>
+                <span class="inline-block max-w-full truncate text-xs bg-slate-100 px-2.5 py-1 rounded-full text-slate-600 font-medium" th:text="${item.product.category != null ? item.product.category.name : '-'}">Category</span>
               </td>
               <td class="px-4 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-3">

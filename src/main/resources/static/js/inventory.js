@@ -75,7 +75,7 @@
       if (isSuccess) {
         asyncMessage.classList.add('border', 'border-emerald-200', 'bg-emerald-50', 'text-emerald-800');
       } else {
-        asyncMessage.classList.add('border', 'border-error-container', 'bg-error-container', 'text-on-error-container');
+        asyncMessage.classList.add('border', 'border-red-200', 'bg-red-50', 'text-red-800');
       }
       asyncMessage.textContent = message;
       asyncMessage.classList.remove('hidden');
@@ -102,14 +102,31 @@
       if (!tableBody) return;
 
       const existing = document.getElementById('inventory-empty-row');
-      const hasRows = tableBody.querySelector('.inventory-row');
-      if (!hasRows && !existing) {
+      const rows = Array.from(tableBody.querySelectorAll('.inventory-row'));
+      const visibleRows = rows.filter(function (row) {
+        return !row.classList.contains('hidden');
+      });
+      const message = rows.length === 0
+        ? 'No inventory has been recorded for this station yet.'
+        : 'No products match your search.';
+
+      if (visibleRows.length === 0 && !existing) {
         const row = document.createElement('tr');
         row.id = 'inventory-empty-row';
-        row.innerHTML = '<td class="px-6 py-10 text-center text-sm text-slate-500" colspan="5">No inventory has been recorded for this station yet.</td>';
+        row.innerHTML = '<td class="px-6 py-10 text-center text-sm text-slate-500" colspan="5"></td>';
+        const cell = row.querySelector('td');
+        if (cell) {
+          cell.textContent = message;
+        }
         tableBody.appendChild(row);
       }
-      if (hasRows && existing) {
+      if (existing && visibleRows.length === 0) {
+        const cell = existing.querySelector('td');
+        if (cell) {
+          cell.textContent = message;
+        }
+      }
+      if (existing && visibleRows.length > 0) {
         existing.remove();
       }
     }
@@ -141,6 +158,13 @@
       const productId = String(data.productId || '');
       const row = document.querySelector('tr[data-product-id="' + productId + '"]');
       if (row) {
+        if (data.deleted) {
+          row.remove();
+          updateSummary(data);
+          renderEmptyState();
+          sortRows();
+          return;
+        }
         row.dataset.currentQuantity = String(data.updatedQuantity);
         row.dataset.stockQuantity = String(data.updatedQuantity);
         const stockValue = row.querySelector('.stock-value');
@@ -275,6 +299,18 @@
       bindSidebarLinks();
       sidebarBound = true;
     }
+
+    const links = Array.from(document.querySelectorAll('aside a[href]'));
+    links.forEach(function (anchor) {
+      anchor.classList.remove('bg-[#005FB8]', 'text-white', 'shadow-sm');
+    });
+    const activeLink = links.find(function (anchor) {
+      const href = anchor.getAttribute('data-href') || anchor.getAttribute('href') || '';
+      return href.endsWith('/inventory');
+    });
+    if (activeLink) {
+      activeLink.classList.add('bg-[#005FB8]', 'text-white', 'shadow-sm');
+    }
   }
 
   function bindSidebarLinks() {
@@ -382,6 +418,8 @@
       await loadPageScripts(doc);
       if (typeof window.initInventoryPage === 'function') await window.initInventoryPage();
       if (typeof window.initCustomerPage === 'function') await window.initCustomerPage();
+      if (typeof window.initImportPage === 'function') await window.initImportPage();
+      if (typeof window.initSalePage === 'function') await window.initSalePage();
       if (typeof window.initOrderPage === 'function') await window.initOrderPage();
 
       if (addToHistory) {

@@ -9,7 +9,15 @@
   let sidebarBound = false;
   const NAV_DELAY = 140;
 
-  function getCsrf() {
+  function getCsrf(form) {
+    const hiddenField = form ? form.querySelector('input[type="hidden"][name]:not(#customer-form-mode)') : null;
+    if (hiddenField && hiddenField.name) {
+      return {
+        parameter: hiddenField.name,
+        token: hiddenField.value || ''
+      };
+    }
+
     const parameterMeta = document.querySelector('meta[name="_csrf_parameter"]');
     const tokenMeta = document.querySelector('meta[name="_csrf"]');
     return {
@@ -18,8 +26,8 @@
     };
   }
 
-  function appendCsrf(formData) {
-    const csrf = getCsrf();
+  function appendCsrf(formData, form) {
+    const csrf = getCsrf(form);
     if (csrf.token && !formData.has(csrf.parameter)) {
       formData.append(csrf.parameter, csrf.token);
     }
@@ -64,7 +72,6 @@
     const customerNameField = document.getElementById('customer-name-field');
     const customerPhoneField = document.getElementById('customer-phone-field');
     const customerAddressField = document.getElementById('customer-address-field');
-    const deleteCustomerButton = document.getElementById('delete-customer-button');
     const customerSearch = document.getElementById('customer-search');
     const asyncMessage = document.getElementById('customer-async-message');
     const customerCountValue = document.getElementById('customer-count-value');
@@ -98,7 +105,6 @@
         customerIdField.readOnly = false;
         customerIdField.classList.remove('bg-slate-100', 'text-slate-500');
       }
-      if (deleteCustomerButton) deleteCustomerButton.classList.add('hidden');
       if (modalTitle) modalTitle.textContent = 'Add customer';
       if (modalSubtitle) modalSubtitle.textContent = 'Create a customer profile for sale orders.';
     }
@@ -126,7 +132,6 @@
       if (customerNameField) customerNameField.value = customerName || '';
       if (customerPhoneField) customerPhoneField.value = customerPhone || '';
       if (customerAddressField) customerAddressField.value = customerAddress || '';
-      if (deleteCustomerButton) deleteCustomerButton.classList.remove('hidden');
       if (modalTitle) modalTitle.textContent = 'Edit customer';
       if (modalSubtitle) modalSubtitle.textContent = 'Update customer information while keeping the original ID.';
       showModal();
@@ -161,10 +166,6 @@
         + '    <span class="material-symbols-outlined text-sm">edit</span>'
         + '    Edit'
         + '  </button>'
-        + '  <button class="open-delete-customer ml-2 inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-100 transition-colors" type="button">'
-        + '    <span class="material-symbols-outlined text-sm">delete</span>'
-        + '    Delete'
-        + '  </button>'
         + '</td>';
       updateRow(row, customer);
       return row;
@@ -182,11 +183,6 @@
         editButton.dataset.customerName = customer.name;
         editButton.dataset.customerPhone = customer.phoneNumber;
         editButton.dataset.customerAddress = customer.address;
-      }
-      const deleteButton = row.querySelector('.open-delete-customer');
-      if (deleteButton) {
-        deleteButton.dataset.customerId = customer.id;
-        deleteButton.dataset.customerName = customer.name;
       }
       const cells = row.querySelectorAll('td');
       if (cells[0]) cells[0].textContent = customer.id;
@@ -211,7 +207,6 @@
         updateRow(row, customer);
       }
       bindEditButtons();
-      bindDeleteButtons();
       renderEmptyState();
       if (isNew && customerSearch && customerSearch.value.trim()) {
         applySearch(customerSearch.value.trim().toLowerCase());
@@ -238,54 +233,6 @@
           );
         });
       });
-    }
-
-    function removeCustomerRow(customerId) {
-      const row = findCustomerRow(customerId);
-      if (row) row.remove();
-      renderEmptyState();
-    }
-
-    function bindDeleteButtons() {
-      document.querySelectorAll('.open-delete-customer').forEach(function (button) {
-        if (button.dataset.bound === 'true') return;
-        button.dataset.bound = 'true';
-        button.addEventListener('click', async function () {
-          const customerId = this.dataset.customerId || '';
-          const customerName = this.dataset.customerName || customerId;
-          await deleteCustomer(customerId, customerName);
-        });
-      });
-    }
-
-    async function deleteCustomer(customerId, customerName) {
-      if (!customerId) return;
-      if (!window.confirm('Delete customer "' + customerName + '"?')) return;
-
-      const deleteUrl = form ? (form.dataset.deleteUrl || '') : '';
-      const formData = appendCsrf(new FormData());
-      formData.append('customerId', customerId);
-
-      try {
-        const response = await fetch(deleteUrl, {
-          method: 'POST',
-          headers: { 'X-Requested-With': 'XMLHttpRequest' },
-          body: formData,
-          credentials: 'same-origin'
-        });
-        const data = await response.json();
-        if (!response.ok || !data.success) {
-          showAsyncMessage('error', data.message || 'Unable to delete customer.');
-          return;
-        }
-
-        removeCustomerRow(data.customerId);
-        if (customerCountValue) customerCountValue.textContent = String(data.customerCount);
-        showAsyncMessage('success', data.message || 'Customer deleted successfully.');
-        hideModal();
-      } catch (_) {
-        showAsyncMessage('error', 'Network error while deleting customer. Please try again.');
-      }
     }
 
     document.querySelectorAll('#open-create-customer, #open-create-customer-secondary').forEach(function (button) {
@@ -321,7 +268,7 @@
         const updateUrl = form.dataset.updateUrl || '';
         const submitUrl = mode === 'edit' ? updateUrl : createUrl;
 
-        const formData = appendCsrf(new FormData(form));
+        const formData = appendCsrf(new FormData(form), form);
 
         try {
           const response = await fetch(submitUrl, {
@@ -346,17 +293,7 @@
       });
     }
 
-    if (deleteCustomerButton) {
-      deleteCustomerButton.addEventListener('click', async function () {
-        await deleteCustomer(
-          customerIdField ? customerIdField.value.trim() : '',
-          customerNameField ? customerNameField.value.trim() : ''
-        );
-      });
-    }
-
     bindEditButtons();
-    bindDeleteButtons();
     renderEmptyState();
 
     if (!sidebarBound) {
@@ -472,6 +409,8 @@
       await loadPageScripts(doc);
       if (typeof window.initInventoryPage === 'function') await window.initInventoryPage();
       if (typeof window.initCustomerPage === 'function') await window.initCustomerPage();
+      if (typeof window.initImportPage === 'function') await window.initImportPage();
+      if (typeof window.initSalePage === 'function') await window.initSalePage();
       if (typeof window.initOrderPage === 'function') await window.initOrderPage();
 
       if (addToHistory) {

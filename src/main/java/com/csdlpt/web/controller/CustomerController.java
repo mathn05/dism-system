@@ -5,6 +5,7 @@ import com.csdlpt.web.entity.Station;
 import com.csdlpt.web.repository.StationRepository;
 import com.csdlpt.web.security.AppUserPrincipal;
 import com.csdlpt.web.service.CustomerService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,7 @@ public class CustomerController {
         model.addAttribute("currentStation", currentStation);
         model.addAttribute("customers", customerService.findAll());
         model.addAttribute("customerCount", customerService.countAll());
+        model.addAttribute("topCustomer", customerService.findTopCustomerByStationId(currentStation.getId()));
         return "customer";
     }
 
@@ -68,18 +70,10 @@ public class CustomerController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteCustomer(@RequestParam String customerId) {
         Map<String, Object> response = new HashMap<>();
-        try {
-            customerService.delete(customerId);
-            response.put("success", true);
-            response.put("message", "Customer deleted successfully.");
-            response.put("customerId", customerId.trim());
-            response.put("customerCount", customerService.countAll());
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException ex) {
-            response.put("success", false);
-            response.put("message", ex.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
+        response.put("success", false);
+        response.put("message", "Customer deletion is disabled.");
+        response.put("customerId", customerId == null ? "" : customerId.trim());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     private ResponseEntity<Map<String, Object>> handleCustomerResponse(CustomerSupplier supplier, String message) {

@@ -98,7 +98,7 @@
                         <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Name</th>
                         <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Phone</th>
                         <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Address</th>
-                        <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider text-right">Action</th>
+                        <th class="px-4 py-4 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider text-right">Edit</th>
                     </tr>
                     </thead>
                     <tbody id="customer-table-body" class="divide-y divide-slate-200">
@@ -118,12 +118,6 @@
                                     type="button">
                                 <span class="material-symbols-outlined text-sm">edit</span>
                                 Edit
-                            </button>
-                            <button class="open-delete-customer ml-2 inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-100 transition-colors"
-                                    th:attr="data-customer-id=${customer.id},data-customer-name=${customer.name}"
-                                    type="button">
-                                <span class="material-symbols-outlined text-sm">delete</span>
-                                Delete
                             </button>
                         </td>
                     </tr>
@@ -145,7 +139,8 @@
                 </button>
             </div>
 
-            <form id="customer-form" class="mt-5 space-y-4" th:attr="data-create-url=@{/customer/create-ajax},data-update-url=@{/customer/update-ajax},data-delete-url=@{/customer/delete-ajax}">
+            <form id="customer-form" class="mt-5 space-y-4" th:attr="data-create-url=@{/customer/create-ajax},data-update-url=@{/customer/update-ajax}">
+                <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
                 <input id="customer-form-mode" type="hidden" value="create"/>
                 <div class="space-y-1.5">
                     <label class="text-[11px] font-bold tracking-wider text-slate-500 uppercase" for="customer-id-field">Customer ID</label>
@@ -165,10 +160,6 @@
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
                     <button id="cancel-customer-modal" class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" type="button">Cancel</button>
-                    <button id="delete-customer-button" class="hidden inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 transition-colors" type="button">
-                        <span class="material-symbols-outlined text-sm">delete</span>
-                        Delete
-                    </button>
                     <button id="submit-customer-form" class="inline-flex items-center justify-center gap-2 rounded-lg bg-[#004692] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:opacity-90 transition-opacity" type="submit">
                         <span class="material-symbols-outlined text-sm">save</span>
                         Save Customer
