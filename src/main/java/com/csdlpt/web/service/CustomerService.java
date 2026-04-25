@@ -3,7 +3,6 @@ package com.csdlpt.web.service;
 import com.csdlpt.web.entity.Customer;
 import com.csdlpt.web.repository.CustomerRepository;
 import com.csdlpt.web.repository.SaleRepository;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,20 +74,6 @@ public class CustomerService {
         customer.setPhoneNumber(normalizedPhone);
         customer.setAddress(normalizedAddress);
         return customerRepository.save(customer);
-    }
-
-    public void delete(String customerId) {
-        String normalizedId = normalizeCustomerId(customerId);
-
-        Customer customer = customerRepository.findById(normalizedId)
-            .orElseThrow(() -> new IllegalArgumentException("Customer not found."));
-
-        try {
-            customerRepository.delete(customer);
-            customerRepository.flush();
-        } catch (DataIntegrityViolationException ex) {
-            throw new IllegalArgumentException("Customer is being used in orders and cannot be deleted.");
-        }
     }
 
     private String normalizeCustomerId(String customerId) {

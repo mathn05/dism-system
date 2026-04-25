@@ -40,7 +40,7 @@
         <section id="import-error-message" th:if="${errorMessage}" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800" th:text="${errorMessage}"></section>
         <section id="import-client-message" class="hidden rounded-xl px-4 py-3 text-sm font-semibold"></section>
 
-        <section class="grid grid-cols-1 xl:grid-cols-[0.95fr_1.55fr] gap-6">
+        <section class="space-y-6">
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-5">
                 <div>
                     <h3 class="text-lg font-headline font-bold text-slate-900">Create import receipt</h3>
@@ -65,7 +65,7 @@
                             </button>
                         </div>
                         <div id="import-lines" class="space-y-3">
-                            <div class="import-line grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[1.45fr_0.7fr_0.9fr_auto]">
+                            <div class="import-line grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[1.8fr_0.75fr_0.95fr_auto]">
                                 <select name="productId" class="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#004692] focus:ring-[#004692]" required>
                                     <option value="">Select product</option>
                                     <option th:each="product : ${products}" th:value="${product.id}" th:text="${product.id + ' - ' + product.name}" th:attr="data-product-id=${product.id}">PRD01</option>
@@ -87,18 +87,18 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="px-6 py-5 border-b border-slate-200">
-                    <h3 class="text-lg font-headline font-bold text-slate-900">Recent imports</h3>
-                    <p class="text-sm text-slate-500">Danh sach phieu nhap cua chi nhanh hien tai, kem chi tiet san pham trong tung phieu.</p>
+                <div class="px-7 py-6 border-b border-slate-200">
+                    <h3 class="text-xl font-headline font-bold text-slate-900">Recent imports</h3>
+                    <p class="mt-1 text-sm text-slate-500">Danh sach phieu nhap cua chi nhanh hien tai, kem chi tiet san pham trong tung phieu.</p>
                 </div>
-                <div class="p-6 space-y-4">
+                <div class="p-7 space-y-5">
                     <div th:if="${#lists.isEmpty(imports)}" class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
                         No import receipts recorded for this station yet.
                     </div>
                     <article th:each="receipt : ${imports}" class="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
-                        <div class="flex flex-col gap-3 border-b border-slate-200 bg-white px-5 py-4 md:flex-row md:items-center md:justify-between">
+                        <div class="flex flex-col gap-3 border-b border-slate-200 bg-white px-6 py-5 md:flex-row md:items-center md:justify-between">
                             <div>
-                                <div class="text-sm font-headline font-black text-[#004692]" th:text="${receipt.importEntity.id}">IMP001</div>
+                                <div class="text-base font-headline font-black text-[#004692]" th:text="${receipt.importEntity.id}">IMP001</div>
                                 <div class="mt-1 text-xs font-semibold text-slate-500" th:text="${#temporals.format(receipt.importEntity.createdAt, 'dd/MM/yyyy HH:mm')}">25/04/2026 05:00</div>
                             </div>
                             <div class="grid grid-cols-1 gap-1 text-sm text-slate-600 md:text-right">
@@ -107,7 +107,7 @@
                             </div>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full min-w-[680px] text-left border-collapse">
+                            <table class="w-full text-left border-collapse">
                                 <thead class="bg-slate-50">
                                 <tr>
                                     <th class="px-4 py-3 text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider">Product</th>
@@ -118,10 +118,10 @@
                                 </thead>
                                 <tbody class="divide-y divide-slate-200">
                                 <tr th:each="detail : ${receipt.details}">
-                                    <td class="px-4 py-3 text-sm font-semibold text-slate-900" th:text="${detail.product.id + ' - ' + detail.product.name}">PRD01</td>
-                                    <td class="px-4 py-3 text-sm text-slate-600" th:text="${detail.product.category != null ? detail.product.category.name : '-'}">Category</td>
-                                    <td class="px-4 py-3 text-sm font-semibold text-slate-900 text-right" th:text="${detail.quantity}">1</td>
-                                    <td class="px-4 py-3 text-sm font-semibold text-slate-900 text-right" th:text="${#numbers.formatDecimal(detail.importPrice, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                                    <td class="px-4 py-3 text-sm font-semibold text-slate-900 break-words" th:text="${detail.product.id + ' - ' + detail.product.name}">PRD01</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600 break-words" th:text="${detail.product.category != null ? detail.product.category.name : '-'}">Category</td>
+                                    <td class="px-4 py-3 text-sm font-semibold text-slate-900 text-right whitespace-nowrap" th:text="${detail.quantity}">1</td>
+                                    <td class="px-4 py-3 text-sm font-semibold text-slate-900 text-right whitespace-nowrap" th:text="${#numbers.formatDecimal(detail.importPrice, 1, 'COMMA', 2, 'POINT')}">0.00</td>
                                 </tr>
                                 </tbody>
                             </table>

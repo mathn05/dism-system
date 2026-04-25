@@ -5,11 +5,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 import com.csdlpt.web.service.AppUserDetailsService;
 
-@Component
 public class StationAuthenticationProvider extends DaoAuthenticationProvider {
 
     public StationAuthenticationProvider(AppUserDetailsService appUserDetailsService,

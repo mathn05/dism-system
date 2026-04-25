@@ -5,7 +5,6 @@ import com.csdlpt.web.entity.Station;
 import com.csdlpt.web.repository.StationRepository;
 import com.csdlpt.web.security.AppUserPrincipal;
 import com.csdlpt.web.service.CustomerService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -64,16 +63,6 @@ public class CustomerController {
             () -> customerService.update(customerId, name, phoneNumber, address),
             "Customer updated successfully."
         );
-    }
-
-    @PostMapping("/delete-ajax")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> deleteCustomer(@RequestParam String customerId) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", false);
-        response.put("message", "Customer deletion is disabled.");
-        response.put("customerId", customerId == null ? "" : customerId.trim());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     private ResponseEntity<Map<String, Object>> handleCustomerResponse(CustomerSupplier supplier, String message) {
