@@ -29,6 +29,10 @@ public class SecurityConfig {
         "/masterdata/**"
     };
 
+    private static final String[] ADMIN_PATHS = {
+            "/admin/**"
+    };
+
     @Bean
     public StationAuthenticationProvider stationAuthenticationProvider(AppUserDetailsService appUserDetailsService,
                                                                        PasswordEncoder passwordEncoder) {
@@ -36,28 +40,54 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   StationAuthenticationProvider stationAuthenticationProvider,
-                                                   StationWebAuthenticationDetailsSource detailsSource) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            StationAuthenticationProvider stationAuthenticationProvider,
+            StationWebAuthenticationDetailsSource detailsSource
+    ) throws Exception {
+
         http
-            .authenticationProvider(stationAuthenticationProvider)
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/css/**", "/js/**").permitAll()
-                .requestMatchers(STATION_USER_PATHS).hasAnyRole("ADMIN", "BRANCH_STAFF")
-                .requestMatchers(SHARED_ACCESS_PATHS).hasAnyRole("ADMIN", "BRANCH_STAFF")
-                .anyRequest().denyAll())
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .authenticationDetailsSource(detailsSource)
-                .defaultSuccessUrl("/dashboard", true)
-                .failureUrl("/login?error")
-                .permitAll())
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-                .permitAll())
-            .rememberMe(Customizer.withDefaults());
+                .authenticationProvider(stationAuthenticationProvider)
+
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/css/**", "/js/**").permitAll()
+
+                        .requestMatchers(ADMIN_PATHS).hasRole("ADMIN")
+
+                        .requestMatchers(STATION_USER_PATHS)
+                        .hasAnyRole("ADMIN", "BRANCH_STAFF")
+
+                        .requestMatchers(SHARED_ACCESS_PATHS)
+                        .hasAnyRole("ADMIN", "BRANCH_STAFF")
+
+                        .anyRequest().authenticated()
+                )
+
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .authenticationDetailsSource(detailsSource)
+                        .successHandler((request, response, authentication) -> {
+
+                            boolean isAdmin = authentication.getAuthorities()
+                                    .stream()
+                                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+                            if (isAdmin) {
+                                response.sendRedirect("/admin/dashboard");
+                            } else {
+                                response.sendRedirect("/dashboard");
+                            }
+                        })
+                        .failureUrl("/login?error")
+                        .permitAll()
+                )
+
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                );
 
         return http.build();
     }
