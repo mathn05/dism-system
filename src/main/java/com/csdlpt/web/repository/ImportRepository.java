@@ -73,7 +73,7 @@ public interface ImportRepository extends JpaRepository<ImportEntity, String> {
                 GROUP BY CAST(i.createdAt AS date)
                 ORDER BY CAST(i.createdAt AS date)
             """)
-    List<Object[]> importLabels(@Param("stationId") String stationId);
+    List<Object> importLabels(@Param("stationId") String stationId);
 
     @Query("""
                 SELECT SUM(d.quantity)
@@ -148,7 +148,7 @@ public interface ImportRepository extends JpaRepository<ImportEntity, String> {
                 GROUP BY CAST(i.created_at AS date)
                 ORDER BY CAST(i.created_at AS date)
             """, nativeQuery = true)
-    List<Object[]> importLabels(
+    List<Object> importLabels(
             @Param("stationId") String stationId,
             @Param("fromDate") LocalDate fromDate,
             @Param("toDate") LocalDate toDate
@@ -161,7 +161,7 @@ public interface ImportRepository extends JpaRepository<ImportEntity, String> {
                 GROUP BY CAST(i.created_at AS date)
                 ORDER BY CAST(i.created_at AS date)
             """, nativeQuery = true)
-    List<Object[]> importLabels(
+    List<Object> importLabels(
             @Param("fromDate") LocalDate fromDate,
             @Param("toDate") LocalDate toDate
     );
