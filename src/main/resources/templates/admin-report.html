@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="light" lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Admin - Reports</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+    <style>
+        body { font-family: 'Inter', sans-serif; } </style>
+</head>
+
+<body class="bg-[#f4faff] text-[#111d23]">
+
+<div th:replace="sidebar :: sidebar"></div>
+
+<main class="ml-64 min-h-screen p-8 space-y-8">
+
+    <div class="bg-white p-4 rounded-xl border flex items-center gap-4 flex-wrap">
+
+        <label class="text-sm font-semibold">Chọn chi nhánh:</label>
+
+        <label for="stationSelect"></label><select id="stationSelect"
+                                                   class="border rounded-lg p-2">
+
+            <option value="" th:selected="${selectedStation == null}">
+                -- Tất cả chi nhánh --
+            </option>
+
+            <option th:each="s : ${stations}"
+                    th:value="${s.id}"
+                    th:text="${s.name}"
+                    th:selected="${s.id == selectedStation}">
+            </option>
+
+        </select>
+
+        <!-- FROM DATE -->
+        <label class="text-sm font-semibold ml-4">Từ ngày:</label>
+        <label for="fromDate"></label><input type="date"
+                                             id="fromDate"
+                                             class="border rounded-lg p-2"
+                                             th:value="${fromDate}">
+
+        <!-- TO DATE -->
+        <label class="text-sm font-semibold">Đến ngày:</label>
+        <label for="toDate"></label><input type="date"
+                                           id="toDate"
+                                           class="border rounded-lg p-2"
+                                           th:value="${toDate}">
+
+        <div class="ml-auto flex gap-2">
+
+            <button type="button"
+                    onclick="applyFilter()"
+                    class="bg-[#004692] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#00336b]">
+                Filter
+            </button>
+
+            <button type="button"
+                    onclick="resetFilter()"
+                    class="bg-gray-200 text-[#111d23] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-300">
+                Reset
+            </button>
+
+        </div>
+    </div>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
+
+        <div class="bg-white p-5 rounded-xl border">
+            <div class="text-sm text-slate-500">Revenue</div>
+            <div class="text-2xl font-bold text-green-600"
+                 th:text="${#numbers.formatInteger(totalRevenue, 0, 'COMMA')}">
+                0
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border">
+            <div class="text-sm text-slate-500">Cost</div>
+            <div class="text-2xl font-bold text-red-500"
+                 th:text="${#numbers.formatInteger(totalCost,0,'COMMA')}">
+                0
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border">
+            <div class="text-sm text-slate-500">Profit</div>
+            <div class="text-2xl font-bold text-blue-600"
+                 th:text="${#numbers.formatInteger(profit,0,'COMMA')}">
+                0
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border">
+            <div class="text-sm text-slate-500">Orders</div>
+            <div class="text-2xl font-bold"
+                 th:text="${totalOrders}">
+                0
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border">
+            <div class="text-sm text-slate-500">Inventory</div>
+            <div class="text-2xl font-bold"
+                 th:text="${totalInventory}">
+                0
+            </div>
+        </div>
+
+    </section>
+
+    <section class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+        <div class="bg-white p-6 rounded-xl border">
+            <h3 class="font-bold mb-4">Revenue</h3>
+            <canvas id="revenueChart"></canvas>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border">
+            <h3 class="font-bold mb-4">Cost</h3>
+            <canvas id="costChart"></canvas>
+        </div>
+
+    </section>
+
+    <section class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+        <div class="bg-white p-6 rounded-xl border">
+            <h3 class="font-bold mb-4">Import vs Sale</h3>
+            <canvas id="transactionChart"></canvas>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border">
+            <h3 class="font-bold mb-4">Inventory by Station</h3>
+
+            <div class="space-y-4 mt-4">
+                <div th:each="item : ${inventoryByStation}">
+                    <div class="flex justify-between text-sm">
+                        <span th:text="${item.stationName}">Station</span>
+                        <span class="font-bold" th:text="${item.totalStock}">0</span>
+                    </div>
+
+                    <div class="h-2 bg-slate-100 rounded-full">
+                        <div class="h-2 bg-[#004692] rounded-full"
+                             th:style="'width:' + ${item.percent} + '%'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<script th:inline="javascript">
+
+    const revenueLabels = /*[[${revenueLabels}]]*/ [];
+    const revenueData = /*[[${revenueData}]]*/ [];
+
+    new Chart(document.getElementById('revenueChart'), {
+        type: 'line',
+        data: {
+            labels: revenueLabels,
+            datasets: [{
+                data: revenueData,
+                borderColor: '#16a34a',
+                fill: true,
+                label: 'Revenue'
+            }]
+        }
+    });
+
+    const costLabels = /*[[${costLabels}]]*/ [];
+    const costData = /*[[${costData}]]*/ [];
+
+    new Chart(document.getElementById('costChart'), {
+        type: 'line',
+        data: {
+            labels: costLabels,
+            datasets: [{
+                data: costData,
+                borderColor: '#ef4444',
+                fill: true,
+                label: 'Cost'
+            }]
+        }
+    });
+
+    const importLabels = /*[[${importLabels}]]*/ [];
+    const importData = /*[[${importData}]]*/ [];
+    const saleData = /*[[${saleData}]]*/ [];
+
+    console.log(importLabels.length);
+    console.log(importData.length);
+    console.log(saleData.length);
+
+    new Chart(document.getElementById('transactionChart'), {
+        type: 'bar',
+        data: {
+            labels: importLabels,
+            datasets: [
+                {
+                    label: 'Import',
+                    data: importData,
+                    backgroundColor: '#275fae'
+                },
+                {
+                    label: 'Sale',
+                    data: saleData,
+                    backgroundColor: '#004692'
+                }
+            ]
+        }
+    });
+
+    function applyFilter() {
+        const stationId = document.getElementById("stationSelect").value;
+        const fromDate = document.getElementById("fromDate").value;
+        const toDate = document.getElementById("toDate").value;
+
+        const params = new URLSearchParams();
+
+        if (stationId) params.append("stationId", stationId);
+        if (fromDate) params.append("fromDate", fromDate);
+        if (toDate) params.append("toDate", toDate);
+
+        window.location.href = "/admin/reports?" + params.toString();
+    }
+
+    function resetFilter() {
+        window.location.href = "/admin/reports";
+    }
+
+</script>
+
+</body>
+</html>
