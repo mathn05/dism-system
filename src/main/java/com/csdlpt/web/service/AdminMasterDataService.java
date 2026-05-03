@@ -18,6 +18,7 @@ public class AdminMasterDataService{
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final SupplierRepository supplierRepository;
+    private final IdGenerationService idGenerationService;
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
@@ -25,6 +26,11 @@ public class AdminMasterDataService{
 
 
     public void saveProduct(Product product) {
+        if (product.getId() == null || product.getId().isBlank()) {
+            product.setId(idGenerationService.nextProductId());
+        } else {
+            product.setId(idGenerationService.normalizeManualId(product.getId()));
+        }
         productRepository.save(product);
     }
 
@@ -60,6 +66,11 @@ public class AdminMasterDataService{
     }
 
     public void saveSupplier(Supplier supplier) {
+        if (supplier.getId() == null || supplier.getId().isBlank()) {
+            supplier.setId(idGenerationService.nextSupplierId());
+        } else {
+            supplier.setId(idGenerationService.normalizeManualId(supplier.getId()));
+        }
         supplierRepository.save(supplier);
     }
 

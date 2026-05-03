@@ -102,8 +102,8 @@
       if (form) form.reset();
       if (modeField) modeField.value = 'create';
       if (customerIdField) {
-        customerIdField.readOnly = false;
-        customerIdField.classList.remove('bg-slate-100', 'text-slate-500');
+        customerIdField.readOnly = true;
+        customerIdField.classList.add('bg-slate-100', 'text-slate-500');
       }
       if (modalTitle) modalTitle.textContent = 'Add customer';
       if (modalSubtitle) modalSubtitle.textContent = 'Create a customer profile for sale orders.';
@@ -113,13 +113,14 @@
       if (form) form.reset();
       if (modeField) modeField.value = 'create';
       if (customerIdField) {
-        customerIdField.readOnly = false;
-        customerIdField.classList.remove('bg-slate-100', 'text-slate-500');
+        customerIdField.value = '';
+        customerIdField.readOnly = true;
+        customerIdField.classList.add('bg-slate-100', 'text-slate-500');
       }
       if (modalTitle) modalTitle.textContent = 'Add customer';
       if (modalSubtitle) modalSubtitle.textContent = 'Create a customer profile for sale orders.';
       showModal();
-      if (customerIdField) customerIdField.focus();
+      if (customerNameField) customerNameField.focus();
     }
 
     function openEditModal(customerId, customerName, customerPhone, customerAddress) {

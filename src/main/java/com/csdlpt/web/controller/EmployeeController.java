@@ -4,6 +4,7 @@ import com.csdlpt.web.entity.AppUser;
 import com.csdlpt.web.entity.Station;
 import com.csdlpt.web.repository.AppUserRepository;
 import com.csdlpt.web.repository.StationRepository;
+import com.csdlpt.web.service.IdGenerationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,11 +20,14 @@ public class EmployeeController {
 
     private final StationRepository stationRepository;
     private final AppUserRepository appUserRepository;
+    private final IdGenerationService idGenerationService;
 
     public EmployeeController(StationRepository stationRepository,
-                              AppUserRepository appUserRepository) {
+                              AppUserRepository appUserRepository,
+                              IdGenerationService idGenerationService) {
         this.stationRepository = stationRepository;
         this.appUserRepository = appUserRepository;
+        this.idGenerationService = idGenerationService;
     }
 
     @PostMapping("/create")
@@ -31,6 +35,11 @@ public class EmployeeController {
                              @RequestParam String stationId) {
 
         user.setStation(stationRepository.findById(stationId).orElseThrow());
+        if (user.getId() == null || user.getId().isBlank()) {
+            user.setId(idGenerationService.nextUserId(stationId));
+        } else {
+            user.setId(idGenerationService.normalizeManualId(user.getId()));
+        }
         user.setPassword(user.getPassword());
         appUserRepository.save(user);
 

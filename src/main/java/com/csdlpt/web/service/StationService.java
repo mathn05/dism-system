@@ -12,6 +12,7 @@ import java.util.List;
 public class StationService {
 
     private final StationRepository stationRepository;
+    private final IdGenerationService idGenerationService;
 
     public List<Station> findAllExceptHeadquarter() {
         return stationRepository.findAllExceptHeadquarter();
@@ -25,6 +26,11 @@ public class StationService {
     public void create(Station station) {
         if (station.getHeadquarter() == null) {
             station.setHeadquarter(false);
+        }
+        if (station.getId() == null || station.getId().isBlank()) {
+            station.setId(idGenerationService.stationId(station));
+        } else {
+            station.setId(idGenerationService.normalizeManualId(station.getId()));
         }
         if (stationRepository.existsById(station.getId())) {
             throw new RuntimeException("Station ID already exists");

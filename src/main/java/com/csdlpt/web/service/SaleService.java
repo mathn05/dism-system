@@ -2,12 +2,10 @@ package com.csdlpt.web.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,8 +34,6 @@ public class SaleService {
 
     public record SaleView(Sale sale, List<SaleDetail> details) {}
 
-    private static final DateTimeFormatter ID_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-
     private final SaleRepository saleRepository;
     private final SaleDetailRepository saleDetailRepository;
     private final AppUserRepository appUserRepository;
@@ -45,6 +41,7 @@ public class SaleService {
     private final StationRepository stationRepository;
     private final ProductRepository productRepository;
     private final InventoryService inventoryService;
+    private final IdGenerationService idGenerationService;
 
     public SaleService(SaleRepository saleRepository,
                        SaleDetailRepository saleDetailRepository,
@@ -52,7 +49,8 @@ public class SaleService {
                        CustomerRepository customerRepository,
                        StationRepository stationRepository,
                        ProductRepository productRepository,
-                       InventoryService inventoryService) {
+                       InventoryService inventoryService,
+                       IdGenerationService idGenerationService) {
         this.saleRepository = saleRepository;
         this.saleDetailRepository = saleDetailRepository;
         this.appUserRepository = appUserRepository;
@@ -60,6 +58,7 @@ public class SaleService {
         this.stationRepository = stationRepository;
         this.productRepository = productRepository;
         this.inventoryService = inventoryService;
+        this.idGenerationService = idGenerationService;
     }
 
     @Transactional(readOnly = true)
@@ -88,7 +87,7 @@ public class SaleService {
         }
 
         Sale sale = new Sale();
-        sale.setId(generateId("SAL"));
+        sale.setId(idGenerationService.nextSaleId(station.getId()));
         sale.setCreatedAt(LocalDateTime.now());
         sale.setUser(user);
         sale.setCustomer(customer);
@@ -142,10 +141,6 @@ public class SaleService {
             throw new IllegalArgumentException("At least one sale item is required");
         }
         return normalized;
-    }
-
-    private String generateId(String prefix) {
-        return prefix + "-" + LocalDateTime.now().format(ID_FORMATTER) + "-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
     }
 
     private String normalizeRequired(String value, String message) {

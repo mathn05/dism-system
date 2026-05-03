@@ -2,12 +2,10 @@ package com.csdlpt.web.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,8 +34,6 @@ public class ImportService {
 
     public record ImportView(ImportEntity importEntity, List<ImportDetail> details) {}
 
-    private static final DateTimeFormatter ID_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-
     private final ImportRepository importRepository;
     private final ImportDetailRepository importDetailRepository;
     private final AppUserRepository appUserRepository;
@@ -45,6 +41,7 @@ public class ImportService {
     private final StationRepository stationRepository;
     private final ProductRepository productRepository;
     private final InventoryService inventoryService;
+    private final IdGenerationService idGenerationService;
 
     public ImportService(ImportRepository importRepository,
                          ImportDetailRepository importDetailRepository,
@@ -52,7 +49,8 @@ public class ImportService {
                          SupplierRepository supplierRepository,
                          StationRepository stationRepository,
                          ProductRepository productRepository,
-                         InventoryService inventoryService) {
+                         InventoryService inventoryService,
+                         IdGenerationService idGenerationService) {
         this.importRepository = importRepository;
         this.importDetailRepository = importDetailRepository;
         this.appUserRepository = appUserRepository;
@@ -60,6 +58,7 @@ public class ImportService {
         this.stationRepository = stationRepository;
         this.productRepository = productRepository;
         this.inventoryService = inventoryService;
+        this.idGenerationService = idGenerationService;
     }
 
     @Transactional(readOnly = true)
@@ -88,7 +87,7 @@ public class ImportService {
         }
 
         ImportEntity importEntity = new ImportEntity();
-        importEntity.setId(generateId("IMP"));
+        importEntity.setId(idGenerationService.nextImportId(station.getId()));
         importEntity.setCreatedAt(LocalDateTime.now());
         importEntity.setUser(user);
         importEntity.setSupplier(supplier);
@@ -142,10 +141,6 @@ public class ImportService {
             throw new IllegalArgumentException("At least one import item is required");
         }
         return normalized;
-    }
-
-    private String generateId(String prefix) {
-        return prefix + "-" + LocalDateTime.now().format(ID_FORMATTER) + "-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
     }
 
     private String normalizeRequired(String value, String message) {

@@ -16,11 +16,14 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final SaleRepository saleRepository;
+    private final IdGenerationService idGenerationService;
 
     public CustomerService(CustomerRepository customerRepository,
-                           SaleRepository saleRepository) {
+                           SaleRepository saleRepository,
+                           IdGenerationService idGenerationService) {
         this.customerRepository = customerRepository;
         this.saleRepository = saleRepository;
+        this.idGenerationService = idGenerationService;
     }
 
     @Transactional(readOnly = true)
@@ -42,7 +45,7 @@ public class CustomerService {
     }
 
     public Customer create(String customerId, String name, String phoneNumber, String address) {
-        String normalizedId = normalizeCustomerId(customerId);
+        String normalizedId = idGenerationService.nextCustomerId();
         String normalizedName = normalizeName(name);
         String normalizedPhone = normalizePhoneNumber(phoneNumber);
         String normalizedAddress = normalizeAddress(address);
@@ -81,7 +84,7 @@ public class CustomerService {
             throw new IllegalArgumentException("Customer ID is required.");
         }
 
-        String normalized = customerId.trim();
+        String normalized = idGenerationService.normalizeManualId(customerId);
         if (normalized.length() > 255) {
             throw new IllegalArgumentException("Customer ID must not exceed 255 characters.");
         }
